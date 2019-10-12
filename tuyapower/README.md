@@ -27,15 +27,16 @@ DEVICEVERS = '3.1'
 
 ```
 ## Parameters:
-   id = Device ID e.g. 01234567891234567890
-   ip = Device IP Address e.g. 10.0.1.99
-   key = Device Key e.g. 0123456789abcdef
-   vers = Version of Protocol 3.1 or 3.3
+* id = Device ID e.g. 01234567891234567890
+* ip = Device IP Address e.g. 10.0.1.99
+* key = Device Key e.g. 0123456789abcdef
+* vers = Version of Protocol 3.1 or 3.3
  
 ## Response Data: 
-   on = Switch state - true or false
-   w = Wattage 
-   mA = milliamps 
-   V = Voltage (-99 if error or not supported)
-   err = Error message or OK
+* on = Switch state - true or false
+* w = Wattage 
+* mA = milliamps 
+* V = Voltage 
+* err = Error message or OK
 
+Note: If error occurs, on will be set to false, w, mA and V will be set to -99.0.
