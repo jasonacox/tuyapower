@@ -1,5 +1,5 @@
 # TuyaPower - Python Module
-This python module will will poll WiFi [Tuya](https://en.tuya.com/) campatible Smart Plugs for state (on/off), current (mA), voltage (V), and power (wattage). 
+This python module will poll WiFi [Tuya](https://en.tuya.com/) campatible Smart Plugs for state (on/off), current (mA), voltage (V), and power (wattage). 
 
 # Description
 This project is based on the python pytuya library to poll [Tuya](https://en.tuya.com/) campatible Smart Plugs for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `test.py` script responds with a human redable output of state (on/off), current (mA), voltage (V), and power (W).  The `test-json.py` script responds with JSON containing the same but adds a timestamp for convient time series processing.
@@ -26,16 +26,16 @@ REQUIRED: IP address and Device ID of smart plug.
 
 Build a docker container using `Dockerfile` 
 ```bash
-# build powermonitor container
+# build tuyapower container
 docker build -t tuyapower .
 
 # Devices with older firmware (1.0.4 and below)
-# run powermonitor container - replace with device ID and IP 
-docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" powermonitor
+# run tuyapower container - replace with device ID and IP 
+docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" tuyapower
 
 # Devices with newer firmware (1.0.5 and above)
-# run powermonitor container - replace with device ID and IP 
-docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" -e PLUGINVERS="3.3"  powermonitor
+# run tuyapower container - replace with device ID and IP 
+docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" -e PLUGINVERS="3.3" tuyapower
 ```
 
 ## Setup: Option 2 - Manually (Tested on RaspberryPi):  
@@ -55,14 +55,11 @@ The script does not need docker but it does require the pytuya and pycrypto pyth
 
 2. Run the python `test.py` script:
 ```bash
-#Devices with older firmware (1.0.4 and below)
-python plugpower.py {DEVICEID} {DEVICEIP} {DEVICEKEY [optional]} {DEVICEVERS [optional]}
-```
-eg:
-```bash
+python test.py {DEVICEID} {DEVICEIP} {DEVICEKEY [optional]} {DEVICEVERS [optional]}
+
 #Devices with older firmware (1.0.4 and below)
 $ python3 test.py 01234567891234567890 10.0.0.99
-PowerMonitor (Tuya Power Stats)
+TuyaPower (Tuya Power Stats)
 
 Device 01234567891234567890 at 10.0.0.99 key 0123456789abcdef protocal 3.1:
     Switch On: True
@@ -72,12 +69,10 @@ Device 01234567891234567890 at 10.0.0.99 key 0123456789abcdef protocal 3.1:
     Projected usage (kWh):  Day: 1.034400  Week: 7.240800  Month: 31.376800
 
 { "datetime": "2019-10-12T21:46:50Z", "switch": "True", "power": "43.1", "current": "362.0", "voltage": "119.5" }
-```
 
-```bash
 #Devices with newer firmware (1.0.5 and above)
 $ python3 test.py 01234567891234567890 10.0.0.99 0123456789abcdef 3.3
-PowerMonitor (Tuya Power Stats)
+TuyaPower (Tuya Power Stats)
 
 Device 01234567891234567890 at 10.0.0.99 key 0123456789abcdef protocal 3.3:
     Switch On: True

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-# PowerMonitor (Tuya Power Stats)
+# TuyaPower (Tuya Power Stats)
 #      Power Probe - Wattage of smartplugs - JSON Output
 
 import tuyapower
@@ -12,7 +12,7 @@ import sys
 
 # Read command line options or set defaults
 if (len(sys.argv) < 2) and not (("PLUGID" in os.environ) or ("PLUGIP" in os.environ)):
-    print('PowerMonitor (Tuya Power Stats)\n')
+    print('TuyaPower (Tuya Power Stats)\n')
     print('Usage: %s <PLUGID> <PLUGIP> <PLUGKEY> <PLUGVERS>\n' % sys.argv[0])
     print('    Required: <PLUGID> is the Device ID e.g. 01234567891234567890')
     print('              <PLUGIP> is the IP address of the smart plug e.g. 10.0.1.99')
@@ -48,7 +48,7 @@ week = 7.0 * day
 month = (week * 52.0)/12.0
 
 # Print Output
-print('PowerMonitor (Tuya Power Stats)')
+print('TuyaPower (Tuya Power Stats)')
 print("\nDevice %s at %s key %s protocol %s:" % (PLUGID,PLUGIP,PLUGKEY,PLUGVERS))
 print('    Switch On: %r' % on)
 print('    Power (W): %f' % w)
