@@ -4,9 +4,10 @@
 # Author: Jason A. Cox
 # For more information see https://github.com/jasonacox/powermonitor
 #
-# Usage:
-#
-# (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
+# Functions and Usage
+#   (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
+#   tuyapower.devicePrint(id, ip, key, vers)
+#   dataJSON = tuyapower.deviceJSON(id, ip, key, vers)
 #
 # Parameters Sent:
 #   id = Device ID e.g. 01234567891234567890
@@ -29,7 +30,7 @@ import time
 import sys
 
 name = "tuyapower"
-version_tuple = (0, 0, 5)
+version_tuple = (0, 0, 6)
 version = version_string = __version__ = '%d.%d.%d' % version_tuple
 __author__ = 'jasonacox'
 
@@ -117,4 +118,41 @@ def deviceInfo( deviceid, ip, key, vers ):
                 V = -99.0
                 return sw, w, mA, V, 'User Interrupt'
 
+# Print output
+def devicePrint( deviceid, ip, key, vers ):
+    # grab timestamp
+    now = datetime.datetime.utcnow()
+    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ") 
 
+    # Poll Smart Swich for Power Data
+    (on, w, mA, V, err) = deviceInfo(deviceid,ip,key,vers)
+
+    # Check for error
+    if err != 'OK':
+            print(' ERROR: %s\n' % err)
+
+    # Compute projected kWh
+    day = (w/1000.0)*24
+    week = 7.0 * day
+    month = (week * 52.0)/12.0
+
+    # Print Output
+    print('TuyaPower (Tuya Power Stats)')
+    print("\nDevice %s at %s key %s protocol %s:" % (deviceid,ip,key,vers))
+    print('    Switch On: %r' % on)
+    print('    Power (W): %f' % w)
+    print('    Current (mA): %f' % mA)
+    print('    Voltage (V): %f' % V)
+    print('    Projected usage (kWh):  Day: %f  Week: %f  Month: %f\n' % (day, week, month))
+
+# Print output
+def deviceJSON( deviceid, ip, key, vers ):
+    # grab timestamp
+    now = datetime.datetime.utcnow()
+    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ") 
+
+    # Poll Smart Swich for Power Data
+    (on, w, mA, V, err) = deviceInfo(deviceid,ip,key,vers)
+
+    # Print JSON
+    return("{ \"datetime\": \"%s\", \"switch\": \"%s\", \"power\": \"%s\", \"current\": \"%s\", \"voltage\": \"%s\", \"response\": \"%s\" }" % (iso_time, on, w, mA, V, err))

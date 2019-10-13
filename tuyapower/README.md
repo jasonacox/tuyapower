@@ -13,6 +13,13 @@ Python module to pull power and state data from Tuya WiFi smart devices.
  pip install Crypto		# some systems will need this
  pip install pyaes		# some systems will need this
 ```
+# Functions
+* deviceInfo - Poll device and return on, w, mA, V and err data.
+   `(on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)`
+* devicePrint - Poll device and print formatted output to stdout.
+   `tuyapower.devicePrint(id, ip, key, vers)`
+* deviceJSON - Poll device and return JSON formatted details.
+   `dataJSON = tuyapower.deviceJSON(id, ip, key, vers)`
 
 # Usage:
 ```python

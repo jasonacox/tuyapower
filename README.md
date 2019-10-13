@@ -29,8 +29,8 @@ Install pip and python libraries if you haven't already:
  sudo apt-get install python-crypto python-pip		
  pip install pycrypto
  pip install pytuya
- pip install Crypto		# some systems will need this
- pip install pyaes		# some systems will need this
+ pip install Crypto		
+ pip install pyaes		
  pip install tuyapower  # this module
 
 # Run a test
@@ -44,9 +44,22 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> PLUGKEY = '0123456789abcdef'
 >>> tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,'3.1')
 (True, 1.2, 70.0, 121.1, 'OK')
+
 >>> tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,'3.3')
 (False, -99.0, -99.0, -99.0, 'Timeout polling device')
->>> 
+ 
+>>> tuyapower.devicePrint(PLUGID,PLUGIP,PLUGKEY,'3.1')
+TuyaPower (Tuya Power Stats)
+
+Device 03200160dc4f2216ff61 at 10.0.1.5 key 0123456789abcdef protocol 3.1:
+    Switch On: True
+    Power (W): 1.200000
+    Current (mA): 70.000000
+    Voltage (V): 122.100000
+    Projected usage (kWh):  Day: 0.028800  Week: 0.201600  Month: 0.873600
+
+>>> tuyapower.deviceJSON(PLUGID,PLUGIP,PLUGKEY,'3.1')
+'{ "datetime": "2019-10-13T03:58:57Z", "switch": "True", "power": "1.2", "current": "70.0", "voltage": "122.1", "response": "OK" }'
 ```
 
 ## Setup: Option 1 - Docker
