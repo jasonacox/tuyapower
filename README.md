@@ -22,7 +22,7 @@ REQUIRED: IP address and Device ID of smart plug.
 5. Device Key - If your device is running Firmware 1.0.5 or above, you will need to obtain the Device Key. This is used to connect with the device  decrypt the power consumption data. For details on how to do this, see point 2: https://github.com/clach04/python-tuya/wiki 
 
 ## Setup: PyPi - Easy  
-_Tested on RaspberryPi, Linux, and MacOS._ 
+_Tested on RaspberryPi, Linux, Windows 10 and MacOS._ 
 Install pip and python libraries if you haven't already:
 ```bash
 # Install required libraries
