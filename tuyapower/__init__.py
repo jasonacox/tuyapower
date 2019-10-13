@@ -29,7 +29,7 @@ import time
 import sys
 
 name = "tuyapower"
-version_tuple = (0, 0, 1)
+version_tuple = (0, 0, 5)
 version = version_string = __version__ = '%d.%d.%d' % version_tuple
 __author__ = 'jasonacox'
 

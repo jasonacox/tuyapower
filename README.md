@@ -21,9 +21,36 @@ REQUIRED: IP address and Device ID of smart plug.
 
 5. Device Key - If your device is running Firmware 1.0.5 or above, you will need to obtain the Device Key. This is used to connect with the device  decrypt the power consumption data. For details on how to do this, see point 2: https://github.com/clach04/python-tuya/wiki 
 
+## Setup: PyPi - Easy  
+_Tested on RaspberryPi, Linux, and MacOS._ 
+Install pip and python libraries if you haven't already:
+```bash
+# Install required libraries
+ sudo apt-get install python-crypto python-pip		
+ pip install pycrypto
+ pip install pytuya
+ pip install Crypto		# some systems will need this
+ pip install pyaes		# some systems will need this
+ pip install tuyapower  # this module
+
+# Run a test
+ $ python
+ Python 2.7.13 (default, Sep 26 2018, 18:42:22) 
+[GCC 6.3.0 20170516] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import tuyapower
+>>> PLUGID = '01234567891234567890'
+>>> PLUGIP = '10.0.0.10'
+>>> PLUGKEY = '0123456789abcdef'
+>>> tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,'3.1')
+(True, 1.2, 70.0, 121.1, 'OK')
+>>> tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,'3.3')
+(False, -99.0, -99.0, -99.0, 'Timeout polling device')
+>>> 
+```
 
 ## Setup: Option 1 - Docker
-
+_Tested on Linux and MacOS._
 Build a docker container using `Dockerfile` 
 ```bash
 # build tuyapower container
@@ -38,8 +65,8 @@ docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="012
 docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" -e PLUGINVERS="3.3" tuyapower
 ```
 
-## Setup: Option 2 - Manually (Tested on RaspberryPi):  
-
+## Setup: Option 2 - Manually:  
+_Tested on RaspberryPi, Linux, and MacOS._ 
 The script does not need docker but it does require the pytuya and pycrypto python library. Follow these steps to set it up and run the script:
 
 1. Install pip and python libraries if you haven't already:
