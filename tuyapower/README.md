@@ -10,21 +10,21 @@ Python module to pull power and state data from Tuya WiFi smart devices.
  sudo apt-get install python-crypto python-pip		
  pip install pycrypto
  pip install pytuya
- pip install Crypto		# some systems will need this
- pip install pyaes		# some systems will need this
+ pip install Crypto		
+ pip install pyaes		
 ```
 # Functions
 * deviceInfo - Poll device and return on, w, mA, V and err data.
     ```python
-   (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
+   (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
 * devicePrint - Poll device and print formatted output to stdout.
     ```python
-   tuyapower.devicePrint(id, ip, key, vers)
+   tuyapower.devicePrint(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
 * deviceJSON - Poll device and return JSON formatted details.
     ```python
-   dataJSON = tuyapower.deviceJSON(id, ip, key, vers)
+   dataJSON = tuyapower.deviceJSON(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
 
 # Usage:
@@ -34,16 +34,16 @@ import tuyapower
 PLUGID = '01234567891234567890'
 PLUGIP = '10.0.1.99'
 PLUGKEY = '0123456789abcdef'
-DEVICEVERS = '3.1'
+PLUGVERS = '3.1'
 
 (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,PLUGVERS)
 
 ```
 ## Parameters:
-* id = Device ID e.g. 01234567891234567890
-* ip = Device IP Address e.g. 10.0.1.99
-* key = Device Key e.g. 0123456789abcdef
-* vers = Version of Protocol 3.1 or 3.3
+* PLUGID = Device ID e.g. 01234567891234567890
+* PLUGIP = Device IP Address e.g. 10.0.1.99
+* PLUGKEY = Device Key e.g. 0123456789abcdef
+* PLUGVERS = Version of Protocol 3.1 or 3.3
  
 ## Response Data: 
 * on = Switch state - true or false
