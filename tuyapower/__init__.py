@@ -30,7 +30,7 @@ import time
 import sys
 
 name = "tuyapower"
-version_tuple = (0, 0, 6)
+version_tuple = (0, 0, 7)
 version = version_string = __version__ = '%d.%d.%d' % version_tuple
 __author__ = 'jasonacox'
 
@@ -145,7 +145,7 @@ def devicePrint( deviceid, ip, key, vers ):
     print('    Voltage (V): %f' % V)
     print('    Projected usage (kWh):  Day: %f  Week: %f  Month: %f\n' % (day, week, month))
 
-# Print output
+# JSON response
 def deviceJSON( deviceid, ip, key, vers ):
     # grab timestamp
     now = datetime.datetime.utcnow()
