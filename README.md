@@ -26,12 +26,12 @@ _Tested on RaspberryPi, Linux, Windows 10 and MacOS._
 Install pip and python libraries if you haven't already:
 ```bash
 # Install required libraries
- sudo apt-get install python-crypto python-pip		
+ sudo apt-get install python-crypto python-pip		# for RPi, Linux
  pip install pycrypto
  pip install pytuya
  pip install Crypto		
  pip install pyaes		
- pip install tuyapower  # this module
+ pip install tuyapower  # Pull this tuyapower module from PyPi
 
 # Run a test
  $ python

@@ -3,9 +3,11 @@ Author: Jason A. Cox
 https://github.com/jasonacox/tuyapower
 
 # Description
-Python module to pull power and state data from Tuya WiFi smart devices.
+Python module to pull power and state data from Tuya WiFi smart devices.  _Tested on RaspberryPi, Linux, Windows 10 and MacOS._ 
 
 # Preparation
+This module requires: pycrypto, pytuya, Crypto and pyaes.
+
 ```bash
  sudo apt-get install python-crypto python-pip		
  pip install pycrypto
