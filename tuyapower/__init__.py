@@ -68,41 +68,29 @@ def deviceInfo(deviceid, ip, key, vers):
                         w = float(dps["19"]) / 10.0
                         mA = float(dps["18"])
                         V = float(dps["20"]) / 10.0
-                        log.info(
-                            '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
-                            % (iso_time, sw, w, mA, V)
-                        )
-                        return sw, w, mA, V, "OK"
+                        key = "OK"
                     else:
                         w, mA, V = _DEFAULTS
-                        log.info(
-                            '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
-                            % (iso_time, sw, w, mA, V)
-                        )
-                        return (sw, w, mA, V, "Power data unavailable")
+                        key = "Power data unavailable"
                 else:
                     if "5" in dps.keys():
                         w = float(dps["5"]) / 10.0
                         mA = float(dps["4"])
                         V = float(dps["6"]) / 10.0
-                        log.info(
-                            '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
-                            % (iso_time, sw, w, mA, V)
-                        )
-                        return (sw, w, mA, V, "OK")
+                        key = "OK"
                     else:
                         w, mA, V = _DEFAULTS
-                        log.info(
-                            '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
-                            % (iso_time, sw, w, mA, V)
-                        )
-                        return (sw, w, mA, V, "Power data unavailable")
+                        key = "Power data unavailable"
+                log.info(
+                    '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
+                    % (iso_time, sw, w, mA, V)
+                )
             else:
                 log.info(f"Incomplete response from plug {deviceid} [{ip}].")
                 sw = False
                 w, mA, V = _DEFAULTS
-                return (sw, w, mA, V, "Incomplete response")
-            break
+                key = "Incomplete response"
+            return (sw, w, mA, V, key)
         except KeyboardInterrupt:
             log.info(
                 "CANCEL: Recived interrupt from user while polling plug %s [%s]."
