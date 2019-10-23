@@ -22,11 +22,9 @@
 #   V = Voltage (-99 if error or not supported)
 #   err = Error message or OK
 
-import collections
 import datetime
 import logging
 import sys
-import time
 from time import sleep
 
 import pytuya
@@ -47,6 +45,7 @@ RETRY = 5
 
 _DEFAULTS = (-99, -99, -99)  # w, mA, V
 
+
 # (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
 def deviceInfo(deviceid, ip, key, vers):
     watchdog = 0
@@ -63,22 +62,18 @@ def deviceInfo(deviceid, ip, key, vers):
             if d:
                 dps = data["dps"]
                 sw = dps["1"]
-                if vers == "3.3":
-                    if "19" in dps.keys():
-                        w = float(dps["19"]) / 10.0
-                        mA = float(dps["18"])
-                        V = float(dps["20"]) / 10.0
-                        key = "OK"
-                    else:
-                        key = "Power data unavailable"
+                if vers == "3.3" and "19" in dps.keys():
+                    w = float(dps["19"]) / 10.0
+                    mA = float(dps["18"])
+                    V = float(dps["20"]) / 10.0
+                    key = "OK"
+                elif "5" in dps.keys():
+                    w = float(dps["5"]) / 10.0
+                    mA = float(dps["4"])
+                    V = float(dps["6"]) / 10.0
+                    key = "OK"
                 else:
-                    if "5" in dps.keys():
-                        w = float(dps["5"]) / 10.0
-                        mA = float(dps["4"])
-                        V = float(dps["6"]) / 10.0
-                        key = "OK"
-                    else:
-                        key = "Power data unavailable"
+                    key = "Power data unavailable"
                 log.info(
                     '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
                     % (iso_time, sw, w, mA, V)
@@ -117,10 +112,6 @@ def deviceInfo(deviceid, ip, key, vers):
 
 # Print output
 def devicePrint(deviceid, ip, key, vers):
-    # grab timestamp
-    now = datetime.datetime.utcnow()
-    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
-
     # Poll Smart Swich for Power Data
     (on, w, mA, V, err) = deviceInfo(deviceid, ip, key, vers)
 
