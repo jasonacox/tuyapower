@@ -14,11 +14,11 @@
 #   ip = Device IP Address e.g. 10.0.1.99
 #   key = Device Key e.g. 0123456789abcdef
 #   vers = Version of Protocol 3.1 or 3.3
-# 
-# Response Data: 
+#
+# Response Data:
 #   on = Switch state - true or false
-#   w = Wattage 
-#   mA = milliamps 
+#   w = Wattage
+#   mA = milliamps
 #   V = Voltage (-99 if error or not supported)
 #   err = Error message or OK
 
@@ -31,128 +31,157 @@ import sys
 
 name = "tuyapower"
 version_tuple = (0, 0, 7)
-version = version_string = __version__ = '%d.%d.%d' % version_tuple
-__author__ = 'jasonacox'
+version = version_string = __version__ = "%d.%d.%d" % version_tuple
+__author__ = "jasonacox"
 
 log = logging.getLogger(__name__)
 
-log.info('%s version %s', __name__, version)
-log.info('Python %s on %s', sys.version, sys.platform)
-log.info('Using pytuya version %r', pytuya.version)
+log.info("%s version %s", __name__, version)
+log.info("Python %s on %s", sys.version, sys.platform)
+log.info("Using pytuya version %r", pytuya.version)
 
 # how my times to try to probe plug before giving up
-RETRY=5
+RETRY = 5
 
 # (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
-def deviceInfo( deviceid, ip, key, vers ):
+def deviceInfo(deviceid, ip, key, vers):
     watchdog = 0
     now = datetime.datetime.utcnow()
-    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ") 
+    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     while True:
         try:
             d = pytuya.OutletDevice(deviceid, ip, key)
-            if vers == '3.3':
+            if vers == "3.3":
                 d.set_version(3.3)
 
             data = d.status()
-            if(d):
-                sw =data['dps']['1']
+            if d:
+                sw = data["dps"]["1"]
 
-                if vers == '3.3':
-                    if '19' in data['dps'].keys():
-                        w = (float(data['dps']['19'])/10.0)
-                        mA = float(data['dps']['18'])
-                        V = (float(data['dps']['20'])/10.0)
-                        log.info("{ \"datetime\": \"%s\", \"switch\": \"%s\", \"power\": \"%s\", \"current\": \"%s\", \"voltage\": \"%s\" }" % (iso_time, sw, w, mA, V))
-                        return sw, w, mA, V, 'OK'
+                if vers == "3.3":
+                    if "19" in data["dps"].keys():
+                        w = float(data["dps"]["19"]) / 10.0
+                        mA = float(data["dps"]["18"])
+                        V = float(data["dps"]["20"]) / 10.0
+                        log.info(
+                            '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
+                            % (iso_time, sw, w, mA, V)
+                        )
+                        return sw, w, mA, V, "OK"
                     else:
                         w = -99.0
                         mA = -99.0
                         V = -99.0
-                        log.info("{ \"datetime\": \"%s\", \"switch\": \"%s\", \"power\": \"%s\", \"current\": \"%s\", \"voltage\": \"%s\" }" % (iso_time, sw, w, mA, V))
-                        return sw, w, mA, V, 'Power data unavailable'
+                        log.info(
+                            '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
+                            % (iso_time, sw, w, mA, V)
+                        )
+                        return sw, w, mA, V, "Power data unavailable"
                 else:
-                    if '5' in data['dps'].keys():
-                        w = (float(data['dps']['5'])/10.0)
-                        mA = float(data['dps']['4'])
-                        V = (float(data['dps']['6'])/10.0)
-                        log.info("{ \"datetime\": \"%s\", \"switch\": \"%s\", \"power\": \"%s\", \"current\": \"%s\", \"voltage\": \"%s\" }" % (iso_time, sw, w, mA, V))
-                        return sw, w, mA, V, 'OK'
+                    if "5" in data["dps"].keys():
+                        w = float(data["dps"]["5"]) / 10.0
+                        mA = float(data["dps"]["4"])
+                        V = float(data["dps"]["6"]) / 10.0
+                        log.info(
+                            '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
+                            % (iso_time, sw, w, mA, V)
+                        )
+                        return sw, w, mA, V, "OK"
                     else:
                         w = -99.0
                         mA = -99.0
                         V = -99.0
-                        log.info("{ \"datetime\": \"%s\", \"switch\": \"%s\", \"power\": \"%s\", \"current\": \"%s\", \"voltage\": \"%s\" }" % (iso_time, sw, w, mA, V))
-                        return sw, w, mA, V, 'Power data unavailable'
+                        log.info(
+                            '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
+                            % (iso_time, sw, w, mA, V)
+                        )
+                        return sw, w, mA, V, "Power data unavailable"
             else:
-                log.info("Incomplete response from plug %s [%s]." % (deviceid,ip))
+                log.info(f"Incomplete response from plug {deviceid} [{ip}].")
                 sw = False
                 w = -99.0
                 mA = -99.0
                 V = -99.0
-                return sw, w, mA, V, 'Incomplete response'
+                return sw, w, mA, V, "Incomplete response"
             break
         except KeyboardInterrupt:
-            log.info("CANCEL: Recived interrupt from user while polling plug %s [%s]." % (deviceid,ip))
+            log.info(
+                "CANCEL: Recived interrupt from user while polling plug %s [%s]."
+                % (deviceid, ip)
+            )
             sw = False
             w = -99.0
             mA = -99.0
             V = -99.0
-            return sw, w, mA, V, 'User Interrupt'
+            return sw, w, mA, V, "User Interrupt"
         except:
-            watchdog+=1
-            if(watchdog>RETRY):
-                log.info("TIMEOUT: No response from plug %s [%s] after %s attempts." % (deviceid,ip,RETRY))
+            watchdog += 1
+            if watchdog > RETRY:
+                log.info(
+                    "TIMEOUT: No response from plug %s [%s] after %s attempts."
+                    % (deviceid, ip, RETRY)
+                )
                 sw = False
                 w = -99.0
                 mA = -99.0
                 V = -99.0
-                return sw, w, mA, V, 'Timeout polling device'
+                return sw, w, mA, V, "Timeout polling device"
             try:
                 sleep(2)
             except KeyboardInterrupt:
-                log.info("CANCEL: Recived interrupt from user while polling plug %s [%s]." % (deviceid,ip))
+                log.info(
+                    "CANCEL: Recived interrupt from user while polling plug %s [%s]."
+                    % (deviceid, ip)
+                )
                 sw = False
                 w = -99.0
                 mA = -99.0
                 V = -99.0
-                return sw, w, mA, V, 'User Interrupt'
+                return sw, w, mA, V, "User Interrupt"
+
 
 # Print output
-def devicePrint( deviceid, ip, key, vers ):
+def devicePrint(deviceid, ip, key, vers):
     # grab timestamp
     now = datetime.datetime.utcnow()
-    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ") 
+    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Poll Smart Swich for Power Data
-    (on, w, mA, V, err) = deviceInfo(deviceid,ip,key,vers)
+    (on, w, mA, V, err) = deviceInfo(deviceid, ip, key, vers)
 
     # Check for error
-    if err != 'OK':
-            print(' ERROR: %s\n' % err)
+    if err != "OK":
+        print(" ERROR: %s\n" % err)
 
     # Compute projected kWh
-    day = (w/1000.0)*24
+    day = (w / 1000.0) * 24
     week = 7.0 * day
-    month = (week * 52.0)/12.0
+    month = (week * 52.0) / 12.0
 
     # Print Output
-    print('TuyaPower (Tuya Power Stats)')
-    print("\nDevice %s at %s key %s protocol %s:" % (deviceid,ip,key,vers))
-    print('    Switch On: %r' % on)
-    print('    Power (W): %f' % w)
-    print('    Current (mA): %f' % mA)
-    print('    Voltage (V): %f' % V)
-    print('    Projected usage (kWh):  Day: %f  Week: %f  Month: %f\n' % (day, week, month))
+    print("TuyaPower (Tuya Power Stats)")
+    print(f"\nDevice {deviceid} at {ip} key {key} protocol {vers}:")
+    print("    Switch On: %r" % on)
+    print("    Power (W): %f" % w)
+    print("    Current (mA): %f" % mA)
+    print("    Voltage (V): %f" % V)
+    print(
+        "    Projected usage (kWh):  Day: %f  Week: %f  Month: %f\n"
+        % (day, week, month)
+    )
+
 
 # JSON response
-def deviceJSON( deviceid, ip, key, vers ):
+def deviceJSON(deviceid, ip, key, vers):
     # grab timestamp
     now = datetime.datetime.utcnow()
-    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ") 
+    iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     # Poll Smart Swich for Power Data
-    (on, w, mA, V, err) = deviceInfo(deviceid,ip,key,vers)
+    (on, w, mA, V, err) = deviceInfo(deviceid, ip, key, vers)
 
     # Print JSON
-    return("{ \"datetime\": \"%s\", \"switch\": \"%s\", \"power\": \"%s\", \"current\": \"%s\", \"voltage\": \"%s\", \"response\": \"%s\" }" % (iso_time, on, w, mA, V, err))
+    return (
+        '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s", "response": "%s" }'
+        % (iso_time, on, w, mA, V, err)
+    )
