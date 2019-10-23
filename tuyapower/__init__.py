@@ -22,12 +22,14 @@
 #   V = Voltage (-99 if error or not supported)
 #   err = Error message or OK
 
-import pytuya
-import logging
-from time import sleep
+import collections
 import datetime
-import time
+import logging
 import sys
+import time
+from time import sleep
+
+import pytuya
 
 name = "tuyapower"
 version_tuple = (0, 0, 7)
@@ -43,6 +45,8 @@ log.info("Using pytuya version %r", pytuya.version)
 # how my times to try to probe plug before giving up
 RETRY = 5
 
+_DEFAULTS = (-99, -99, -99)  # w, mA, V
+
 # (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
 def deviceInfo(deviceid, ip, key, vers):
     watchdog = 0
@@ -56,53 +60,48 @@ def deviceInfo(deviceid, ip, key, vers):
 
             data = d.status()
             if d:
-                sw = data["dps"]["1"]
+                dps = data["dps"]
+                sw = dps["1"]
 
                 if vers == "3.3":
-                    if "19" in data["dps"].keys():
-                        w = float(data["dps"]["19"]) / 10.0
-                        mA = float(data["dps"]["18"])
-                        V = float(data["dps"]["20"]) / 10.0
+                    if "19" in dps.keys():
+                        w = float(dps["19"]) / 10.0
+                        mA = float(dps["18"])
+                        V = float(dps["20"]) / 10.0
                         log.info(
                             '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
                             % (iso_time, sw, w, mA, V)
                         )
                         return sw, w, mA, V, "OK"
                     else:
-                        w = -99.0
-                        mA = -99.0
-                        V = -99.0
+                        w, mA, V = _DEFAULTS
                         log.info(
                             '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
                             % (iso_time, sw, w, mA, V)
                         )
-                        return sw, w, mA, V, "Power data unavailable"
+                        return (sw, w, mA, V, "Power data unavailable")
                 else:
-                    if "5" in data["dps"].keys():
-                        w = float(data["dps"]["5"]) / 10.0
-                        mA = float(data["dps"]["4"])
-                        V = float(data["dps"]["6"]) / 10.0
+                    if "5" in dps.keys():
+                        w = float(dps["5"]) / 10.0
+                        mA = float(dps["4"])
+                        V = float(dps["6"]) / 10.0
                         log.info(
                             '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
                             % (iso_time, sw, w, mA, V)
                         )
-                        return sw, w, mA, V, "OK"
+                        return (sw, w, mA, V, "OK")
                     else:
-                        w = -99.0
-                        mA = -99.0
-                        V = -99.0
+                        w, mA, V = _DEFAULTS
                         log.info(
                             '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
                             % (iso_time, sw, w, mA, V)
                         )
-                        return sw, w, mA, V, "Power data unavailable"
+                        return (sw, w, mA, V, "Power data unavailable")
             else:
                 log.info(f"Incomplete response from plug {deviceid} [{ip}].")
                 sw = False
-                w = -99.0
-                mA = -99.0
-                V = -99.0
-                return sw, w, mA, V, "Incomplete response"
+                w, mA, V = _DEFAULTS
+                return (sw, w, mA, V, "Incomplete response")
             break
         except KeyboardInterrupt:
             log.info(
@@ -110,10 +109,8 @@ def deviceInfo(deviceid, ip, key, vers):
                 % (deviceid, ip)
             )
             sw = False
-            w = -99.0
-            mA = -99.0
-            V = -99.0
-            return sw, w, mA, V, "User Interrupt"
+            w, mA, V = _DEFAULTS
+            return (sw, w, mA, V, "User Interrupt")
         except:
             watchdog += 1
             if watchdog > RETRY:
@@ -122,10 +119,8 @@ def deviceInfo(deviceid, ip, key, vers):
                     % (deviceid, ip, RETRY)
                 )
                 sw = False
-                w = -99.0
-                mA = -99.0
-                V = -99.0
-                return sw, w, mA, V, "Timeout polling device"
+                w, mA, V = _DEFAULTS
+                return (sw, w, mA, V, "Timeout polling device")
             try:
                 sleep(2)
             except KeyboardInterrupt:
@@ -134,10 +129,8 @@ def deviceInfo(deviceid, ip, key, vers):
                     % (deviceid, ip)
                 )
                 sw = False
-                w = -99.0
-                mA = -99.0
-                V = -99.0
-                return sw, w, mA, V, "User Interrupt"
+                w, mA, V = _DEFAULTS
+                return (sw, w, mA, V, "User Interrupt")
 
 
 # Print output

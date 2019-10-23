@@ -3,12 +3,13 @@
 # TuyaPower (Tuya Power Stats)
 #      Power Probe - Wattage of smartplugs - JSON Output
 
-import tuyapower
-from time import sleep
 import datetime
-import time
 import os
 import sys
+import time
+from time import sleep
+
+import tuyapower
 
 # Read command line options or set defaults
 if (len(sys.argv) < 2) and not (("PLUGID" in os.environ) or ("PLUGIP" in os.environ)):
