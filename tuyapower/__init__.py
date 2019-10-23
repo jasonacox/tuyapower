@@ -74,10 +74,10 @@ def deviceInfo(deviceid, ip, key, vers):
                     key = "OK"
                 else:
                     key = "Power data unavailable"
-                log.info(
-                    '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
-                    % (iso_time, sw, w, mA, V)
+                info = dict(
+                    datetime=iso_time, switch=sw, power=w, current=mA, voltage=V
                 )
+                log.info(str(info))
             else:
                 log.info(f"Incomplete response from plug {deviceid} [{ip}].")
                 sw = False
