@@ -53,6 +53,7 @@ def deviceInfo(deviceid, ip, key, vers):
     now = datetime.datetime.utcnow()
     iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
     while True:
+        w, mA, V = _DEFAULTS
         try:
             d = pytuya.OutletDevice(deviceid, ip, key)
             if vers == "3.3":
@@ -62,7 +63,6 @@ def deviceInfo(deviceid, ip, key, vers):
             if d:
                 dps = data["dps"]
                 sw = dps["1"]
-
                 if vers == "3.3":
                     if "19" in dps.keys():
                         w = float(dps["19"]) / 10.0
@@ -70,7 +70,6 @@ def deviceInfo(deviceid, ip, key, vers):
                         V = float(dps["20"]) / 10.0
                         key = "OK"
                     else:
-                        w, mA, V = _DEFAULTS
                         key = "Power data unavailable"
                 else:
                     if "5" in dps.keys():
@@ -79,7 +78,6 @@ def deviceInfo(deviceid, ip, key, vers):
                         V = float(dps["6"]) / 10.0
                         key = "OK"
                     else:
-                        w, mA, V = _DEFAULTS
                         key = "Power data unavailable"
                 log.info(
                     '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
@@ -88,7 +86,6 @@ def deviceInfo(deviceid, ip, key, vers):
             else:
                 log.info(f"Incomplete response from plug {deviceid} [{ip}].")
                 sw = False
-                w, mA, V = _DEFAULTS
                 key = "Incomplete response"
             return (sw, w, mA, V, key)
         except KeyboardInterrupt:
@@ -97,7 +94,6 @@ def deviceInfo(deviceid, ip, key, vers):
                 % (deviceid, ip)
             )
             sw = False
-            w, mA, V = _DEFAULTS
             return (sw, w, mA, V, "User Interrupt")
         except:
             watchdog += 1
@@ -107,7 +103,6 @@ def deviceInfo(deviceid, ip, key, vers):
                     % (deviceid, ip, RETRY)
                 )
                 sw = False
-                w, mA, V = _DEFAULTS
                 return (sw, w, mA, V, "Timeout polling device")
             try:
                 sleep(2)
@@ -117,7 +112,6 @@ def deviceInfo(deviceid, ip, key, vers):
                     % (deviceid, ip)
                 )
                 sw = False
-                w, mA, V = _DEFAULTS
                 return (sw, w, mA, V, "User Interrupt")
 
 
