@@ -79,7 +79,7 @@ def deviceInfo(deviceid, ip, key, vers):
                 )
                 log.info(str(info))
             else:
-                log.info(f"Incomplete response from plug {deviceid} [{ip}].")
+                log.info("Incomplete response from plug %s [%s]." % (deviceid,ip))
                 sw = False
                 key = "Incomplete response"
             return (sw, w, mA, V, key)
@@ -126,7 +126,7 @@ def devicePrint(deviceid, ip, key, vers):
 
     # Print Output
     print("TuyaPower (Tuya Power Stats)")
-    print(f"\nDevice {deviceid} at {ip} key {key} protocol {vers}:")
+    print("\nDevice %s at %s key %s protocol %s:" % (deviceid,ip,key,vers))
     print("    Switch On: %r" % on)
     print("    Power (W): %f" % w)
     print("    Current (mA): %f" % mA)

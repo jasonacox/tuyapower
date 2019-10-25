@@ -50,12 +50,12 @@ month = (week * 52.0) / 12.0
 
 # Print Output
 print("TuyaPower (Tuya Power Stats)")
-print(f"\nDevice {PLUGID} at {PLUGIP} key {PLUGKEY} protocol {PLUGVERS}:")
+print("\nDevice %s at %s key %s protocol %s:" % (PLUGID,PLUGIP,PLUGKEY,PLUGVERS))
 print("    Switch On: %r" % on)
 print("    Power (W): %f" % w)
 print("    Current (mA): %f" % mA)
 print("    Voltage (V): %f" % V)
-print(f"    Projected usage (kWh):  Day: {day:f}  Week: {week:f}  Month: {month:f}")
+print("    Projected usage (kWh):  Day: %f Week: %f  Month: %f" % (day,week,month))
 print(
     '\n{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
     % (iso_time, on, w, mA, V)
