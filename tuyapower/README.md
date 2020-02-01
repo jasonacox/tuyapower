@@ -18,19 +18,26 @@ This module requires: pycrypto, pytuya, Crypto and pyaes.
 # Functions
 * deviceInfo - Poll device and return on, w, mA, V and err data.
     ```python
-   (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
+    (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
 * devicePrint - Poll device and print formatted output to stdout.
     ```python
-   tuyapower.devicePrint(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
+    tuyapower.devicePrint(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
 * deviceJSON - Poll device and return JSON formatted details.
     ```python
-   dataJSON = tuyapower.deviceJSON(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
+    dataJSON = tuyapower.deviceJSON(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
+* deviceScan(verbose) - Scans network for smart plug devices and return dictionary of devices and power data.
+    ```python
+    devices = tuyapower.deviceScan(verbose)
+    ```
+* scan() - This is a shortcut for deviceScan(True)
 
-# Usage:
+# Example Usage:
 ```python
+
+# Poll a Single Devices
 import tuyapower
 
 PLUGID = '01234567891234567890'
@@ -40,7 +47,30 @@ PLUGVERS = '3.1'
 
 (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,PLUGVERS)
 
+# Scan Network for All Devices
+# To see output on stdout set verbose True
+tuyapower.deviceScan(True)
+Scanning on UDP port 6666 for devices...
+
+FOUND Device [Valid payload]: 10.0.1.100
+    ID = 01234567891234567890, Key = 0123456789abcdef, Version = 3.1
+    Stats: on=True, W=6.0, mA=54.0, V=121.1 [OK]
+FOUND Device [Valid payload]: 10.0.1.200
+    ID = 01234567891234567891, Key = 0123456789abcdea, Version = 3.1
+    Stats: on=True, W=-99, mA=-99, V=-99 [Power data unavailable]
+
+Scan Complete!  Found 2 devices.
+
+# Scan the network and unpack the response 
+devices = tuyapower.deviceScan()
+    for ip in devices:
+        id = devices[ip]['gwId']
+        key = devices[ip]['productKey']
+        vers = devices[ip]['version']
+        (on, w, mA, V, err) = deviceInfo(id, ip, key, vers)
+        print("Device at %s: ID %s, state=%s, W=%s, mA=%s, V=%s [%s]"%(ip,id,on,w,mA,V,err))
 ```
+
 ## Parameters:
 * PLUGID = Device ID e.g. 01234567891234567890
 * PLUGIP = Device IP Address e.g. 10.0.1.99
