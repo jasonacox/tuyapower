@@ -4,9 +4,9 @@ This python module will poll WiFi [Tuya](https://en.tuya.com/) campatible Smart 
 # Description
 This project is based on the python pytuya library to poll [Tuya](https://en.tuya.com/) campatible Smart Plugs for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `test.py` script responds with a human redable output of state (on/off), current (mA), voltage (V), and power (W).  The `test-json.py` script responds with JSON containing the same but adds a timestamp for convient time series processing.
 
-REQUIRED: IP address and Device ID of smart plug.
-
 ## Preparation
+The tuyapower module includes a scanner function `deviceScan()` to find Smart Plugs on your network.  However, it may not detect all of them. Use the following to manually identify the required IP address and Device ID of the smart plug:
+
 1. Download the Smart Life - Smart Living app for iPhone or Android. Pair with your smart plug (this is important as you cannot monitor a plug that has not been paired).  
 	* https://itunes.apple.com/us/app/smart-life-smart-living/id1115101477?mt=8
 	* https://play.google.com/store/apps/details?id=com.tuya.smartlife&hl=en
@@ -21,8 +21,8 @@ REQUIRED: IP address and Device ID of smart plug.
 
 5. Device Key - If your device is running Firmware 1.0.5 or above, you will need to obtain the Device Key. This is used to connect with the device  decrypt the power consumption data. For details on how to do this, see point 2: https://github.com/clach04/python-tuya/wiki 
 
-### Scan Tool [BETA]
-The `scan.py` script included here will listen to your local network and identify Tuya devices broadcasting their IP, Device ID and Version.  This tool can help you get a list of compatible devices on your network.
+### Scan Tool 
+The module function `tuyapower.deviceScan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID and Version.  This can help you get a list of compatible devices on your network. To run an interactive scan you can use the `tuyapower.scan()` function.
 
 ## Setup: PyPi - Easy  
 _Tested on RaspberryPi, Linux, Windows 10 and MacOS._ 
@@ -35,23 +35,24 @@ Install pip and python libraries if you haven't already:
  pip install Crypto		
  pip install pyaes		
  pip install tuyapower  # Pull this tuyapower module from PyPi
+ ```
 
-# Run a test
- $ python
- Python 2.7.13 (default, Sep 26 2018, 18:42:22) 
-[GCC 6.3.0 20170516] on linux2
-Type "help", "copyright", "credits" or "license" for more information.
->>> import tuyapower
->>> PLUGID = '01234567891234567890'
->>> PLUGIP = '10.0.0.10'
->>> PLUGKEY = '0123456789abcdef'
->>> tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,'3.1')
-(True, 1.2, 70.0, 121.1, 'OK')
+ ## Exmaple Usage
+ ``` python
+# Poll a Single Devices
+import tuyapower
 
->>> tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,'3.3')
-(False, -99.0, -99.0, -99.0, 'Timeout polling device')
- 
->>> tuyapower.devicePrint(PLUGID,PLUGIP,PLUGKEY,'3.1')
+PLUGID = '01234567891234567890'
+PLUGIP = '10.0.1.99'
+PLUGKEY = '0123456789abcdef'
+PLUGVERS = '3.1'
+
+(on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID,PLUGIP,PLUGKEY,PLUGVERS)
+
+tuyapower.deviceJSON(PLUGID,PLUGIP,PLUGKEY,PLUGVERS)
+'{ "datetime": "2019-10-13T03:58:57Z", "switch": "True", "power": "1.2", "current": "70.0", "voltage": "122.1", "response": "OK" }'
+
+tuyapower.devicePrint(PLUGID,PLUGIP,PLUGKEY,PLUGVERS)
 TuyaPower (Tuya Power Stats)
 
 Device 03200160dc4f2216ff61 at 10.0.1.5 key 0123456789abcdef protocol 3.1:
@@ -61,11 +62,31 @@ Device 03200160dc4f2216ff61 at 10.0.1.5 key 0123456789abcdef protocol 3.1:
     Voltage (V): 122.100000
     Projected usage (kWh):  Day: 0.028800  Week: 0.201600  Month: 0.873600
 
->>> tuyapower.deviceJSON(PLUGID,PLUGIP,PLUGKEY,'3.1')
-'{ "datetime": "2019-10-13T03:58:57Z", "switch": "True", "power": "1.2", "current": "70.0", "voltage": "122.1", "response": "OK" }'
+# Scan Network for All Devices
+# To see output on stdout set verbose True
+tuyapower.deviceScan(True)
+Scanning on UDP port 6666 for devices...
+
+FOUND Device [Valid payload]: 10.0.1.100
+    ID = 01234567891234567890, Key = 0123456789abcdef, Version = 3.1
+    Stats: on=True, W=6.0, mA=54.0, V=121.1 [OK]
+FOUND Device [Valid payload]: 10.0.1.200
+    ID = 01234567891234567891, Key = 0123456789abcdea, Version = 3.1
+    Stats: on=True, W=-99, mA=-99, V=-99 [Power data unavailable]
+
+Scan Complete!  Found 2 devices.
+
+# Scan the network and unpack the response 
+devices = tuyapower.deviceScan()
+    for ip in devices:
+        id = devices[ip]['gwId']
+        key = devices[ip]['productKey']
+        vers = devices[ip]['version']
+        (on, w, mA, V, err) = deviceInfo(id, ip, key, vers)
+        print("Device at %s: ID %s, state=%s, W=%s, mA=%s, V=%s [%s]"%(ip,id,on,w,mA,V,err))
 ```
 
-## Setup: Option 1 - Docker
+## Setup: Optional - Docker
 _Tested on Linux and MacOS._
 Build a docker container using `Dockerfile` 
 ```bash
@@ -81,56 +102,7 @@ docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="012
 docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" -e PLUGINVERS="3.3" tuyapower
 ```
 
-## Setup: Option 2 - Manually:  
-_Tested on RaspberryPi, Linux, and MacOS._ 
-The script does not need docker but it does require the pytuya and pycrypto python library. Follow these steps to set it up and run the script:
-
-1. Install pip and python libraries if you haven't already:
-
-```bash
- sudo apt-get install python-crypto python-pip		
- pip install pycrypto
- pip install pytuya
- pip install Crypto		# some systems will need this
- pip install pyaes		# some systems will need this
- 
-```
-
-2. Run the python `test.py` script:
-```bash
-python test.py {DEVICEID} {DEVICEIP} {DEVICEKEY [optional]} {DEVICEVERS [optional]}
-
-#Devices with older firmware (1.0.4 and below)
-$ python3 test.py 01234567891234567890 10.0.0.99
-TuyaPower (Tuya Power Stats)
-
-Device 01234567891234567890 at 10.0.0.99 key 0123456789abcdef protocal 3.1:
-    Switch On: True
-    Power (W): 43.100000
-    Current (mA): 362.000000
-    Voltage (V): 119.500000
-    Projected usage (kWh):  Day: 1.034400  Week: 7.240800  Month: 31.376800
-
-{ "datetime": "2019-10-12T21:46:50Z", "switch": "True", "power": "43.1", "current": "362.0", "voltage": "119.5" }
-
-#Devices with newer firmware (1.0.5 and above)
-$ python3 test.py 01234567891234567890 10.0.0.99 0123456789abcdef 3.3
-TuyaPower (Tuya Power Stats)
-
-Device 01234567891234567890 at 10.0.0.99 key 0123456789abcdef protocal 3.3:
-    Switch On: True
-    Power (W): 43.100000
-    Current (mA): 362.000000
-    Voltage (V): 119.500000
-    Projected usage (kWh):  Day: 1.034400  Week: 7.240800  Month: 31.376800
-
-{ "datetime": "2019-10-12T21:46:50Z", "switch": "True", "power": "43.1", "current": "362.0", "voltage": "119.5" }
-
-```
 Please note, these smart plugs and this script do not hold power usage data in memory so the "Projected usage" reported is an estimate based on current power readings and assumed steady state over time. 
-
-## JSON Output Script
-The `test-json.py` script works the same as `test.py` but produces the data in only JSON output with a datetime stamp.  This makes it easier to feed into other systems for recording, alerting or graphing.
 
 ## Example Products 
 * TanTan Smart Plug Mini Wi-Fi Enabled Outlet with Energy Monitoring - https://www.amazon.com/gp/product/B075Z17987/ref=oh_aui_detailpage_o03_s00?ie=UTF8&psc=1
