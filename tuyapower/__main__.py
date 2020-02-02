@@ -11,5 +11,5 @@
 """
 import tuyapower
 
-print("TuyaPower (Tuya compatible smart plug scanner)\n")
+print("TuyaPower (Tuya compatible smart plug scanner) [%s]"%tuyapower.version)
 tuyapower.scan()

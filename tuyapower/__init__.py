@@ -39,7 +39,7 @@ import json
 import pytuya
 
 name = "tuyapower"
-version_tuple = (0, 0, 11)
+version_tuple = (0, 0, 12)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -247,7 +247,7 @@ def deviceScan(verbose = False):
 
     """
     client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) # UDP
-    client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+    # client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
 
     # Enable broadcasting mode
     client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
