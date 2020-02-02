@@ -295,7 +295,10 @@ def deviceScan(verbose = False):
             try:
                 (on, w, mA, V, err) = deviceInfo(gwId, ip, productKey, version)
                 if(verbose):
-                    print("    Stats: on=%s, W=%s, mA=%s, V=%s [%s]"%(on,w,mA,V,err))
+                    if(w == -99):
+                        print("    Stats: on=%s [%s]"%(on,err))
+                    else:    
+                        print("    Stats: on=%s, W=%s, mA=%s, V=%s [%s]"%(on,w,mA,V,err))
                 devices[ip]['on'] = on
                 devices[ip]['w'] = w
                 devices[ip]['mA'] = mA
