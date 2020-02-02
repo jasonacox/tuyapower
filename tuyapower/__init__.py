@@ -39,7 +39,7 @@ import json
 import pytuya
 
 name = "tuyapower"
-version_tuple = (0, 0, 10)
+version_tuple = (0, 0, 11)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 

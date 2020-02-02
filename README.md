@@ -21,10 +21,7 @@ The tuyapower module includes a scanner function `deviceScan()` to find Smart Pl
 
 5. Device Key - If your device is running Firmware 1.0.5 or above, you will need to obtain the Device Key. This is used to connect with the device  decrypt the power consumption data. For details on how to do this, see point 2: https://github.com/clach04/python-tuya/wiki 
 
-### Scan Tool 
-The module function `tuyapower.deviceScan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID and Version.  This can help you get a list of compatible devices on your network. To run an interactive scan you can use the `tuyapower.scan()` function.
-
-## Setup: PyPi - Easy  
+## Setup  
 _Tested on RaspberryPi, Linux, Windows 10 and MacOS._ 
 Install pip and python libraries if you haven't already:
 ```bash
@@ -36,6 +33,14 @@ Install pip and python libraries if you haven't already:
  pip install pyaes		
  pip install tuyapower  # Pull this tuyapower module from PyPi
  ```
+ 
+### Scan Tool 
+The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Key and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).
+
+You can also run the scanner from the command line using this:
+```bash
+python -m tuyapower
+```
 
  ## Exmaple Usage
  ``` python

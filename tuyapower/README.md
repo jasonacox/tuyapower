@@ -32,7 +32,23 @@ This module requires: pycrypto, pytuya, Crypto and pyaes.
     ```python
     devices = tuyapower.deviceScan(verbose)
     ```
-* scan() - This is a shortcut for deviceScan(True)
+* scan() - This is a shortcut for deviceScan(True) that prints formatted output to stdout
+
+## Parameters:
+* PLUGID = Device ID e.g. 01234567891234567890
+* PLUGIP = Device IP Address e.g. 10.0.1.99
+* PLUGKEY = Device Key e.g. 0123456789abcdef
+* PLUGVERS = Version of Protocol 3.1 or 3.3
+ 
+## Response Data: 
+* on = Switch state - true or false
+* w = Wattage 
+* mA = milliamps 
+* V = Voltage 
+* err = Error message or OK
+* devices = Dictionary of all devices found with power data if available
+
+Note: If error occurs, on will be set to false, w, mA and V will be set to -99.0.
 
 # Example Usage:
 ```python
@@ -71,17 +87,10 @@ devices = tuyapower.deviceScan()
         print("Device at %s: ID %s, state=%s, W=%s, mA=%s, V=%s [%s]"%(ip,id,on,w,mA,V,err))
 ```
 
-## Parameters:
-* PLUGID = Device ID e.g. 01234567891234567890
-* PLUGIP = Device IP Address e.g. 10.0.1.99
-* PLUGKEY = Device Key e.g. 0123456789abcdef
-* PLUGVERS = Version of Protocol 3.1 or 3.3
- 
-## Response Data: 
-* on = Switch state - true or false
-* w = Wattage 
-* mA = milliamps 
-* V = Voltage 
-* err = Error message or OK
+### Scan Tool 
+The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Key and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).
 
-Note: If error occurs, on will be set to false, w, mA and V will be set to -99.0.
+You can also run the scanner from the command line using this:
+```bash
+python -m tuyapower
+```
