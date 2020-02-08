@@ -10,7 +10,7 @@
    (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
    tuyapower.devicePrint(id, ip, key, vers)
    dataJSON = tuyapower.deviceJSON(id, ip, key, vers)
-   devices = deviceScan(verbose)
+   devices = deviceScan(verbose, port)
    scan()
 
  Parameters Sent:
@@ -19,6 +19,7 @@
    key = Device Key e.g. 0123456789abcdef
    vers = Version of Protocol 3.1 or 3.3
    verbose = True or False (print output)
+   port = UDP port to scan (default 6666)
 
  Response Data:
    on = Switch state - true or false
@@ -35,11 +36,13 @@ import sys
 from time import sleep
 import socket
 import json
+from hashlib import md5
+from Crypto.Cipher import AES
 
 import pytuya
 
 name = "tuyapower"
-version_tuple = (0, 0, 14)
+version_tuple = (0, 0, 15)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -52,8 +55,16 @@ log.info("Using pytuya version %r", pytuya.version)
 # how my times to try to probe plug before giving up
 RETRY = 5
 
+# default polling response for error condition
 _DEFAULTS = (-99, -99, -99)  # w, mA, V
 
+# UDP Payload Decrption by tuya-convert 
+pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
+unpad = lambda s: s[:-ord(s[len(s) - 1:])]
+encrypt = lambda msg, key: AES.new(key, AES.MODE_ECB).encrypt(pad(msg).encode())
+decrypt = lambda msg, key: unpad(AES.new(key, AES.MODE_ECB).decrypt(msg)).decode()
+udpkey = md5(b"yGAdlopoPVldABfn").digest()
+decrypt_udp = lambda msg: decrypt(msg, udpkey)
 
 # (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
 def deviceInfo(deviceid, ip, key, vers):
@@ -203,7 +214,8 @@ def deviceJSON(deviceid, ip, key='0123456789abcdef', vers='3.1'):
 
 # SCAN network for Tuya devices
 MAXCOUNT = 10
-PORT = 6666
+UDPPORT = 6666
+UDPPORTS = 6667
 DEBUG = False
 
 # Store found devices in memory
@@ -222,20 +234,22 @@ def appenddevice(newdevice, devices):
 def scan():
     """Sans your network for smart plug devices with output to stdout
     """
-    d = deviceScan(True)
+    d = deviceScan(True, UDPPORT)
+    d = deviceScan(True, UDPPORTS)
 
 # Scan function
-def deviceScan(verbose = False):
+def deviceScan(verbose = False, port = UDPPORT):
     """Scans your network for smart plug devices
-        devices = tuyapower.deviceScan(verbose)
+        devices = tuyapower.deviceScan(verbose, port)
 
     Parameters:
         verbose = True or False, print formatted output to stdout
+        port = UDP port to scan (default 6666) 
 
     Response: 
         devices = Dictionary of all devices found with power data if available
 
-        To unpack data, you can do something like this:
+    To unpack data, you can do something like this:
 
         devices = tuyapower.deviceScan()
         for ip in devices:
@@ -253,13 +267,14 @@ def deviceScan(verbose = False):
     client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
     if(verbose):
-        print("Scanning on UDP port %s for devices...\n"%PORT)
+        print("Scanning on UDP port %s for devices...\n"%port)
     devices={}
     count = 0
     stop = False
 
-    client.bind(("", PORT))
+    client.bind(("", port))
     while stop == False:
+        note = 'invalid'
         data, addr = client.recvfrom(4048)
         if(DEBUG): 
             print("* Message from [%s]: %s\n"%addr,data)
@@ -268,45 +283,48 @@ def deviceScan(verbose = False):
         result = data
         try: 
             result = data[20:-8]
-            note = 'Valid'
-            if result.startswith(b'{'):
-                # this is the regular expected code path
-                if not isinstance(result, str):
-                    result = result.decode()
-                result = json.loads(result)
-            else:
-                if(DEBUG):
-                    print('*  Unexpected payload=%r\n', result)
-                note = 'Unknown'
-                result = {"ip": ip}
+            try:
+                result = decrypt_udp(result)
+            except:
+                result = result.decode()
 
+            result = json.loads(result)
+
+            note = 'Valid'
             ip = result['ip']
             gwId = result['gwId']
             productKey = result['productKey']
             version = result['version']
         except:
             if(DEBUG):
-                print("* Bad data \n")
+                print("*  Unexpected payload=%r\n", result)
             result = {"ip": ip}
+            note = "Unknown"
 
         if appenddevice(result, devices) == False:
             if(verbose):
-                print("FOUND Device [%s payload]: %s\n    ID = %s, Key = %s, Version = %s" % (note,ip,gwId,productKey,version))
+                print("FOUND Device [%s payload]: %s\n    ID = %s, productKey = %s, Version = %s" % (note,ip,gwId,productKey,version))
             try:
-                (on, w, mA, V, err) = deviceInfo(gwId, ip, productKey, version)
-                if(verbose):
-                    if(w == -99):
-                        print("    Stats: on=%s [%s]"%(on,err))
-                    else:    
-                        print("    Stats: on=%s, W=%s, mA=%s, V=%s [%s]"%(on,w,mA,V,err))
-                devices[ip]['on'] = on
-                devices[ip]['w'] = w
-                devices[ip]['mA'] = mA
-                devices[ip]['V'] = V
-                devices[ip]['err'] = err
+                if(version == '3.1'):
+                    # Version 3.1 - no device key requires - poll for status
+                    (on, w, mA, V, err) = deviceInfo(gwId, ip, productKey, version)
+                    if(verbose):
+                        if(w == -99):
+                            print("    Stats: on=%s [%s]"%(on,err))
+                        else:    
+                            print("    Stats: on=%s, W=%s, mA=%s, V=%s [%s]"%(on,w,mA,V,err))
+                    devices[ip]['on'] = on
+                    devices[ip]['w'] = w
+                    devices[ip]['mA'] = mA
+                    devices[ip]['V'] = V
+                    devices[ip]['err'] = err
+                else:
+                    # Version 3.3+ requies device key
+                    if(verbose):
+                        print("    Device Key Required to Poll - No Stats")
             except:
                 if(verbose):
-                    print("    No Stats for %s: Unable to poll",ip)
+                    print("    No Stats for %s: Unable to poll"%ip)
                 devices[ip]['err'] = 'Unable to poll'
         else:
             count = count + 1

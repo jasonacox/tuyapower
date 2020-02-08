@@ -108,3 +108,4 @@ upload.sh
 test.sh
 .vscode/
 sandbox/
+.DS_Store

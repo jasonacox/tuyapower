@@ -5,7 +5,7 @@ with open("tuyapower/README.md", "r") as fh:
 
 setuptools.setup(
     name="tuyapower",
-    version="0.0.14",
+    version="0.0.15",
     author="Jason Cox",
     author_email="jason@jasonacox.com",
     description="Pull power and state data from Tuya WiFi smart devices",
