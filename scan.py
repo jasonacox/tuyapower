@@ -1,12 +1,13 @@
 #!/usr/bin/python
 #
-# TuyaScan - Scan for tuya devices on the network broadcasting on UDP port 6666
+# TuyaScan - Scan for tuya devices on the network broadcasting on UDP port 6666 and 6667
 # 
 # Author: Jason A. Cox
 # For more information see https://github.com/jasonacox/tuyapower
 
 import json
 import socket
+from hashlib import md5
 
 try:
     #raise ImportError
@@ -17,62 +18,105 @@ except ImportError:
     import pyaes  # https://github.com/ricmoo/pyaes
 
 MAXCOUNT = 10
-PORT = 6666
-PROTOCOL_VERSION_BYTES_31 = b'3.1'
-PROTOCOL_VERSION_BYTES_33 = b'3.3'
+DEBUG = False
 
-client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) # UDP
-client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+# UDP packet payload decryption - credit to tuya-convert 
+pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
+unpad = lambda s: s[:-ord(s[len(s) - 1:])]
+encrypt = lambda msg, key: AES.new(key, AES.MODE_ECB).encrypt(pad(msg).encode())
+decrypt = lambda msg, key: unpad(AES.new(key, AES.MODE_ECB).decrypt(msg)).decode()
+udpkey = md5(b"yGAdlopoPVldABfn").digest()
+decrypt_udp = lambda msg: decrypt(msg, udpkey)
 
-# Enable broadcasting mode
-client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-
-print("Scanning on UDP port %s for devices...\n"%PORT)
-
+# Store found devices in memory
 def appenddevice(newdevice, devices):
+    if(newdevice['ip'] in devices):
+        return True
+    """
     for i in devices:
         if i['ip'] == newdevice['ip']:
                 return True
-    devices.append(newdevice)
+    """
+    devices[newdevice['ip']] = newdevice
     return False
 
-devices=[]
-count = 0
-stop = False
+# Scan function
+def deviceScan(verbose = False, port = 6666):
+    """Scans your network for smart plug devices
+        devices = tuyapower.deviceScan(verbose, port)
 
-client.bind(("", PORT))
-while stop == False:
-    data, addr = client.recvfrom(4048)
-    # print("MESSAGE from [%s]: %s"%addr,data)
-    ip = addr[0]
-    gwId = productKey = version = ""
-    result = data
-    try: 
-        result = data[20:-8]
-        note = 'Valid '
-        if result.startswith(b'{'):
-            # this is the regular expected code path
-            if not isinstance(result, str):
+    Parameters:
+        verbose = True or False, print formatted output to stdout
+        port = UDP port to scan (default 6666) 
+
+    Response: 
+        devices = Dictionary of all devices found with power data if available
+
+    To unpack data, you can do something like this:
+
+        devices = tuyapower.deviceScan()
+        for ip in devices:
+            id = devices[ip]['gwId']
+            key = devices[ip]['productKey']
+            vers = devices[ip]['version']
+            (on, w, mA, V, err) = deviceInfo(id, ip, key, vers)
+            print("Device at %s: ID %s, state=%s, W=%s, mA=%s, V=%s [%s]"%(ip,id,on,w,mA,V,err))
+
+    """
+    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) # UDP
+    # client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
+
+    # Enable broadcasting mode
+    client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+    if(verbose):
+        print("Scanning on UDP port %s for devices...\n"%port)
+    devices={}
+    count = 0
+    stop = False
+
+    client.bind(("", port))
+    while stop == False:
+        note = 'invalid'
+        data, addr = client.recvfrom(4048)
+        if(DEBUG): 
+            print("* Message from [%s]: %s\n"%addr,data)
+        ip = addr[0]
+        gwId = productKey = version = ""
+        result = data
+        try: 
+            result = data[20:-8]
+            try:
+                result = decrypt_udp(result)
+            except:
                 result = result.decode()
+
             result = json.loads(result)
-        else:
-            # print('Unexpected payload=%r', result)
-            note = 'Invalid '
+
+            note = 'Valid'
+            ip = result['ip']
+            gwId = result['gwId']
+            productKey = result['productKey']
+            version = result['version']
+        except:
+            if(DEBUG):
+                print("*  Unexpected payload=%r\n", result)
             result = {"ip": ip}
+            note = "Unknown"
 
-        ip = result['ip']
-        gwId = result['gwId']
-        productKey = result['productKey']
-        version = result['version']
-    except:
-        #print("! Bad data !")
-        result = {"ip": ip}
+        if appenddevice(result, devices) == False:
+            if(verbose):
+                print("FOUND Device [%s payload]: %s\n    ID = %s, productKey = %s, Version = %s" % (note,ip,gwId,productKey,version))
+        else:
+            count = count + 1
+            if count > MAXCOUNT: 
+                stop = True
 
-    if appenddevice(result, devices) == False:
-        print("FOUND [%s payload]: %s, ID = %s, Key = %s, Version = %s" % (note,ip,gwId,productKey,version))
-    else:
-        count = count + 1
-        if count > MAXCOUNT: 
-            stop = True
+    if(verbose):
+        print("\nScan Complete!  Found %s devices.\n"%len(devices))
+        
+    return(devices)
 
-print("\nScan Complete!  Found %s devices."%len(devices))
+
+d = deviceScan(True, 6666)
+d = deviceScan(True, 6667)
