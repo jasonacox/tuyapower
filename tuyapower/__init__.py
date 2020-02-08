@@ -58,7 +58,7 @@ RETRY = 5
 # default polling response for error condition
 _DEFAULTS = (-99, -99, -99)  # w, mA, V
 
-# UDP Payload Decrption by tuya-convert 
+# UDP packet payload decryption - credit to tuya-convert 
 pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
 unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 encrypt = lambda msg, key: AES.new(key, AES.MODE_ECB).encrypt(pad(msg).encode())
