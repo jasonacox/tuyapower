@@ -32,7 +32,6 @@
 from __future__ import print_function   # python 2.7 support
 import datetime
 import logging
-import sys
 from time import sleep
 import socket
 import json
@@ -40,11 +39,8 @@ from hashlib import md5
 from Crypto.Cipher import AES
 import pytuya
 
-if sys.version_info[0] < 3:
-    print("Warning: Python 3 Requred for full function")
-
 name = "tuyapower"
-version_tuple = (0, 0, 17)
+version_tuple = (0, 0, 18)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
