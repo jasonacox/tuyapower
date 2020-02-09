@@ -33,6 +33,10 @@ Install pip and python libraries if you haven't already:
  # pip install pyaes		
  pip install tuyapower  # Pull this tuyapower module from PyPi
  ```
+ For Windows 10 users or if you get errors related to Crypto, try installing the pycryptodome module:
+ ```bash
+ pip install pycryptodome
+ ```
  
 ### Scan Tool 
 The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Key and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).

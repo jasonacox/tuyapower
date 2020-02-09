@@ -15,6 +15,11 @@ This module requires: pycrypto, pytuya, Crypto and pyaes.
  # pip install Crypto		
  # pip install pyaes		
 ```
+ For Windows 10 users or if you get errors related to Crypto, try installing the pycryptodome module:
+ ```bash
+ pip install pycryptodome
+ ```
+ 
 # Functions
 * deviceInfo - Poll device and return on, w, mA, V and err data.
     ```python
