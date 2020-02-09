@@ -10,6 +10,7 @@
     python -m tuyapower
 """
 import tuyapower
+import sys
 
 print("TuyaPower (Tuya compatible smart plug scanner) [%s]\n"%tuyapower.version)
 tuyapower.scan()

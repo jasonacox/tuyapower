@@ -12,8 +12,8 @@ This module requires: pycrypto, pytuya, Crypto and pyaes.
  sudo apt-get install python-crypto python-pip		
  pip install pycrypto
  pip install pytuya
- pip install Crypto		
- pip install pyaes		
+ # pip install Crypto		
+ # pip install pyaes		
 ```
 # Functions
 * deviceInfo - Poll device and return on, w, mA, V and err data.

@@ -29,8 +29,8 @@ Install pip and python libraries if you haven't already:
  sudo apt-get install python-crypto python-pip		# for RPi, Linux
  pip install pycrypto
  pip install pytuya
- pip install Crypto		
- pip install pyaes		
+ # pip install Crypto		
+ # pip install pyaes		
  pip install tuyapower  # Pull this tuyapower module from PyPi
  ```
  

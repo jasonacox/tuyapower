@@ -5,17 +5,11 @@
 # Author: Jason A. Cox
 # For more information see https://github.com/jasonacox/tuyapower
 
+from __future__ import print_function
 import json
 import socket
 from hashlib import md5
-
-try:
-    # Raise ImportError
-    import Crypto
-    from Crypto.Cipher import AES  # PyCrypto
-except ImportError:
-    Crypto = AES = None
-    import pyaes  # https://github.com/ricmoo/pyaes
+from Crypto.Cipher import AES  # PyCrypto
 
 MAXCOUNT = 10       # How many tries before stopping
 DEBUG = False       # Additional details beyond verbose
@@ -84,7 +78,7 @@ def deviceScan(verbose = False):
     count = 0
     counts = 0
     spinnerx = 0
-    spinner = "|/-\|"
+    spinner = "|/-\\|"
 
     # loop to find devices
     while (count + counts) <= MAXCOUNT:

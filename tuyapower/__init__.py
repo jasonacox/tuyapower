@@ -29,7 +29,7 @@
    err = Error message or OK
    devices = Dictionary of all devices found with power data if available
 """
-
+from __future__ import print_function   # python 2.7 support
 import datetime
 import logging
 import sys
@@ -38,11 +38,13 @@ import socket
 import json
 from hashlib import md5
 from Crypto.Cipher import AES
-
 import pytuya
 
+if sys.version_info[0] < 3:
+    print("Warning: Python 3 Requred for full function")
+
 name = "tuyapower"
-version_tuple = (0, 0, 16)
+version_tuple = (0, 0, 17)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -181,7 +183,6 @@ def devicePrint(deviceid, ip, key='0123456789abcdef', vers='3.1'):
         "    Projected usage (kWh):  Day: %f  Week: %f  Month: %f\n"
         % (day, week, month)
     )
-
 
 # JSON response
 def deviceJSON(deviceid, ip, key='0123456789abcdef', vers='3.1'):
