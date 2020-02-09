@@ -42,7 +42,7 @@ from Crypto.Cipher import AES
 import pytuya
 
 name = "tuyapower"
-version_tuple = (0, 0, 15)
+version_tuple = (0, 0, 16)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -171,7 +171,7 @@ def devicePrint(deviceid, ip, key='0123456789abcdef', vers='3.1'):
     month = (week * 52.0) / 12.0
 
     # Print Output
-    print("TuyaPower (Tuya Power Stats)")
+    print("TuyaPower (Tuya Power Stats) [%s]"%version)
     print("\nDevice %s at %s key %s protocol %s:" % (deviceid,ip,key,vers))
     print("    Switch On: %r" % on)
     print("    Power (W): %f" % w)
@@ -213,10 +213,18 @@ def deviceJSON(deviceid, ip, key='0123456789abcdef', vers='3.1'):
     )
 
 # SCAN network for Tuya devices
-MAXCOUNT = 10
-UDPPORT = 6666
-UDPPORTS = 6667
-DEBUG = False
+MAXCOUNT = 10       # How many tries before stopping
+DEBUG = False       # Additional details beyond verbose
+UDPPORT = 6666      # Tuya 3.1 UDP Port
+UDPPORTS = 6667     # Tuya 3.3 encrypted UDP Port
+TIMEOUT = 3.0       # Seconds to wait for a broadcast
+
+# Return positive number or zero
+def floor(x):
+    if x > 0:
+            return x
+    else:
+            return 0
 
 # Store found devices in memory
 def appenddevice(newdevice, devices):
@@ -234,17 +242,15 @@ def appenddevice(newdevice, devices):
 def scan():
     """Sans your network for smart plug devices with output to stdout
     """
-    d = deviceScan(True, UDPPORT)
-    d = deviceScan(True, UDPPORTS)
+    d = deviceScan(True)
 
 # Scan function
-def deviceScan(verbose = False, port = UDPPORT):
+def deviceScan(verbose = False):
     """Scans your network for smart plug devices
-        devices = tuyapower.deviceScan(verbose, port)
+        devices = tuyapower.deviceScan(verbose)
 
     Parameters:
         verbose = True or False, print formatted output to stdout
-        port = UDP port to scan (default 6666) 
 
     Response: 
         devices = Dictionary of all devices found with power data if available
@@ -260,22 +266,47 @@ def deviceScan(verbose = False, port = UDPPORT):
             print("Device at %s: ID %s, state=%s, W=%s, mA=%s, V=%s [%s]"%(ip,id,on,w,mA,V,err))
 
     """
-    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) # UDP
-    # client.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
-
-    # Enable broadcasting mode
+     # Enable UDP lisenting broadcasting mode on UDP port 6666 - 3.1 Devices
+    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) 
     client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    client.bind(("", UDPPORT))
+    client.settimeout(TIMEOUT) 
+    # Enable UDP lisenting broadcasting mode on encrypted UDP port 6667 - 3.3 Devices
+    clients = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) 
+    clients.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    clients.bind(("", UDPPORTS))
+    clients.settimeout(TIMEOUT)
 
     if(verbose):
-        print("Scanning on UDP port %s for devices...\n"%port)
+        print("Scanning on UDP ports %s and %s for devices...\n"%(UDPPORT,UDPPORTS))
+
+    # globals
     devices={}
     count = 0
-    stop = False
+    counts = 0
+    spinnerx = 0
+    spinner = "|/-\\|"
 
-    client.bind(("", port))
-    while stop == False:
+    while (count + counts) <= MAXCOUNT:
         note = 'invalid'
-        data, addr = client.recvfrom(4048)
+        if(verbose):
+            print("Scanning... %s\r"%(spinner[spinnerx]), end = '')
+            spinnerx = (spinnerx + 1) % 4
+
+        if (count <= counts):  # alternate between 6666 and 6667 ports
+            try:
+                data, addr = client.recvfrom(4048)
+            except:
+                # Timeout
+                count = count + 1
+                continue
+        else:
+            try:
+                data, addr = clients.recvfrom(4048)
+            except:
+                # Timeout
+                counts = counts + 1
+                continue
         if(DEBUG): 
             print("* Message from [%s]: %s\n"%addr,data)
         ip = addr[0]
@@ -301,7 +332,13 @@ def deviceScan(verbose = False, port = UDPPORT):
             result = {"ip": ip}
             note = "Unknown"
 
+        # check to see if we have seen this device before and add to devices array
         if appenddevice(result, devices) == False:
+            # new device found - back off count if we keep getting new devices
+            if(version=='3.1'):
+                count = floor(count - 1)
+            else:
+                counts = floor(counts - 1)
             if(verbose):
                 print("FOUND Device [%s payload]: %s\n    ID = %s, productKey = %s, Version = %s" % (note,ip,gwId,productKey,version))
             try:
@@ -321,18 +358,19 @@ def deviceScan(verbose = False, port = UDPPORT):
                 else:
                     # Version 3.3+ requies device key
                     if(verbose):
-                        print("    Device Key Required to Poll - No Stats")
+                        print("    Device Key required to poll for stats")
             except:
                 if(verbose):
                     print("    No Stats for %s: Unable to poll"%ip)
                 devices[ip]['err'] = 'Unable to poll'
         else:
-            count = count + 1
-            if count > MAXCOUNT: 
-                stop = True
+            if(version=='3.1'):
+                count = count + 1
+            else:
+                counts = counts + 1
 
     if(verbose):
-        print("\nScan Complete!  Found %s devices.\n"%len(devices))
+        print("                    \nScan Complete!  Found %s devices.\n"%len(devices))
         
     return(devices)
     

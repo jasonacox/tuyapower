@@ -28,8 +28,9 @@ This module requires: pycrypto, pytuya, Crypto and pyaes.
     ```python
     dataJSON = tuyapower.deviceJSON(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
-* deviceScan(verbose, port) - Scans network for smart plug devices and return dictionary of devices and power data.
+* deviceScan(verbose) - Scans network for smart plug devices and return dictionary of devices and power data.
     ```python
+    verbose = False
     devices = tuyapower.deviceScan(verbose)
     ```
 * scan() - This is a shortcut for deviceScan() that prints formatted output to stdout for UDP ports 6666 and 6667
@@ -40,7 +41,6 @@ This module requires: pycrypto, pytuya, Crypto and pyaes.
 * PLUGKEY = Device Key e.g. 0123456789abcdef
 * PLUGVERS = Version of Protocol 3.1 or 3.3
 * verbose = Print more details - True or False (default is False)
-* port = UDP port (default is 6666)
  
 ## Response Data: 
 * on = Switch state - true or false
@@ -92,7 +92,7 @@ devices = tuyapower.deviceScan()
 ### Scan Tool 
 The function `tuyapower.scan()` will listen to your local network (UDP 6666 and 6667) and identify Tuya devices broadcasting their IP, Device ID, productKey and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).
 
-You can also run the scanner from the command line using this:
+You can run the scanner from the command line using this:
 ```bash
 python -m tuyapower
 ```

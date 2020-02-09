@@ -5,7 +5,7 @@ This python module will poll WiFi [Tuya](https://en.tuya.com/) campatible Smart 
 This project is based on the python pytuya library to poll [Tuya](https://en.tuya.com/) campatible Smart Plugs for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `test.py` script responds with a human redable output of state (on/off), current (mA), voltage (V), and power (W).  The `test-json.py` script responds with JSON containing the same but adds a timestamp for convient time series processing.
 
 ## Preparation
-The tuyapower module includes a scanner function `deviceScan()` to find Smart Plugs on your network.  However, it may not detect all of them. Use the following to manually identify the required IP address and Device ID of the smart plug:
+The tuyapower module includes a scanner function `deviceScan()` to find Smart Plugs on your network.  However, it may or may not be able to detect all of them. You can use the following to manually identify the required IP address and Device ID of the smart plug:
 
 1. Download the Smart Life - Smart Living app for iPhone or Android. Pair with your smart plug (this is important as you cannot monitor a plug that has not been paired).  
 	* https://itunes.apple.com/us/app/smart-life-smart-living/id1115101477?mt=8
@@ -37,7 +37,7 @@ Install pip and python libraries if you haven't already:
 ### Scan Tool 
 The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Key and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).
 
-You can also run the scanner from the command line using this:
+You can run the scanner from the command line using this:
 ```bash
 python -m tuyapower
 ```
@@ -70,7 +70,9 @@ Device 03200160dc4f2216ff61 at 10.0.1.5 key 0123456789abcdef protocol 3.1:
 # Scan Network for All Devices
 # To see output on stdout set verbose True
 tuyapower.deviceScan(True)
-Scanning on UDP port 6666 for devices...
+TuyaPower (Tuya compatible smart plug scanner) [0.0.16]
+
+Scanning on UDP ports 6666 and 6667 for devices...
 
 FOUND Device [Valid payload]: 10.0.1.100
     ID = 01234567891234567890, Key = 0123456789abcdef, Version = 3.1
@@ -78,8 +80,11 @@ FOUND Device [Valid payload]: 10.0.1.100
 FOUND Device [Valid payload]: 10.0.1.200
     ID = 01234567891234567891, Key = 0123456789abcdea, Version = 3.1
     Stats: on=True, W=-99, mA=-99, V=-99 [Power data unavailable]
+FOUND Device [Valid payload]: 10.0.1.222
+    ID = 01234567891234567893, productKey = 0123456789abcdea, Version = 3.3
+    Device Key required to poll for stats
 
-Scan Complete!  Found 2 devices.
+Scan Complete!  Found 3 devices.
 
 # Scan the network and unpack the response 
 devices = tuyapower.deviceScan()
