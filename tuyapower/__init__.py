@@ -123,7 +123,7 @@ def deviceInfo(deviceid, ip, key, vers):
             return (sw, w, mA, V, key)
         except KeyboardInterrupt:
             log.info(
-                "CANCEL: Recived interrupt from user while polling plug %s [%s]."
+                "CANCEL: Received interrupt from user while polling plug %s [%s]."
                 % (deviceid, ip)
             )
             sw = False
@@ -141,7 +141,7 @@ def deviceInfo(deviceid, ip, key, vers):
                 sleep(2)
             except KeyboardInterrupt:
                 log.info(
-                    "CANCEL: Recived interrupt from user while polling plug %s [%s]."
+                    "CANCEL: Received interrupt from user while polling plug %s [%s]."
                     % (deviceid, ip)
                 )
                 sw = False
@@ -160,7 +160,7 @@ def devicePrint(deviceid, ip, key='0123456789abcdef', vers='3.1'):
         vers = Version of Protocol 3.1 or 3.3
 
     """
-    # Poll Smart Swich for Power Data
+    # Poll Smart Switch for Power Data
     (on, w, mA, V, err) = deviceInfo(deviceid, ip, key, vers)
 
     # Check for error
@@ -204,7 +204,7 @@ def deviceJSON(deviceid, ip, key='0123456789abcdef', vers='3.1'):
     now = datetime.datetime.utcnow()
     iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    # Poll Smart Swich for Power Data
+    # Poll Smart Switch for Power Data
     (on, w, mA, V, err) = deviceInfo(deviceid, ip, key, vers)
 
     # Print JSON
@@ -357,7 +357,7 @@ def deviceScan(verbose = False):
                     devices[ip]['V'] = V
                     devices[ip]['err'] = err
                 else:
-                    # Version 3.3+ requies device key
+                    # Version 3.3+ requires device key
                     if(verbose):
                         print("    Device Key required to poll for stats")
             except:
