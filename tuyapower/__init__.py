@@ -41,7 +41,7 @@ from Crypto.Cipher import AES
 import pytuya
 
 name = "tuyapower"
-version_tuple = (0, 0, 19)
+version_tuple = (0, 0, 20)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -49,8 +49,11 @@ log = logging.getLogger(__name__)
 
 log.info("%s version %s", __name__, version)
 log.info("Python %s on %s", sys.version, sys.platform)
-log.info("Using pytuya version %r", pytuya.version)
-
+try:
+    log.info("Using pytuya version %r", pytuya.__version__)
+except:
+    log.info("Using pytuya unknown version")
+    
 # how my times to try to probe plug before giving up
 RETRY = 5
 
@@ -211,7 +214,7 @@ def deviceJSON(deviceid, ip, key='0123456789abcdef', vers='3.1'):
     )
 
 # SCAN network for Tuya devices
-MAXCOUNT = 10       # How many tries before stopping
+MAXCOUNT = 15       # How many tries before stopping
 DEBUG = False       # Additional details beyond verbose
 UDPPORT = 6666      # Tuya 3.1 UDP Port
 UDPPORTS = 6667     # Tuya 3.3 encrypted UDP Port
