@@ -27,15 +27,10 @@ Install pip and python libraries if you haven't already:
 ```bash
 # Install required libraries
  sudo apt-get install python-crypto python-pip		# for RPi, Linux
- pip install pycrypto
+ pip install pycryptodome  # or pycrypto or Crypto
+ pip install pyaes
  pip install pytuya
- # pip install Crypto		
- # pip install pyaes		
  pip install tuyapower  # Pull this tuyapower module from PyPi
- ```
- For Windows 10 users or if you get errors related to Crypto, try installing the pycryptodome module:
- ```bash
- pip install pycryptodome
  ```
  
 ### Scan Tool 
