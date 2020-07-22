@@ -13,7 +13,7 @@ import tuyapower
 
 # Read command line options or set defaults
 if (len(sys.argv) < 2) and not (("PLUGID" in os.environ) or ("PLUGIP" in os.environ)):
-    print("TuyaPower (Tuya Power Stats) JSON Output\n")
+    print("TuyaPower (Tuya Power Stats) [%s] JSON Output"%tuyapower.__version__)
     print("Usage: %s <PLUGID> <PLUGIP> <PLUGKEY> <PLUGVERS>\n" % sys.argv[0])
     print("    Required: <PLUGID> is the Device ID e.g. 01234567891234567890")
     print("              <PLUGIP> is the IP address of the smart plug e.g. 10.0.1.99")
