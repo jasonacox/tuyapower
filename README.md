@@ -27,10 +27,10 @@ Install pip and python libraries if you haven't already:
 ```bash
 # Install required libraries
  sudo apt-get install python-crypto python-pip		# for RPi, Linux
- pip install pycryptodome  # or pycrypto or Crypto
- pip install pyaes
- pip install pytuya
- pip install tuyapower  # Pull this tuyapower module from PyPi
+ python3 -m pip install pycryptodome    # or pycrypto or Crypto
+ python3 -m pip install pyaes
+ python3 -m pip install pytuya
+ python3 -m pip install tuyapower       # Pull this tuyapower module from PyPi
  ```
  
 ### Scan Tool 
@@ -38,7 +38,7 @@ The function `tuyapower.scan()` will listen to your local network and identify T
 
 You can run the scanner from the command line using this:
 ```bash
-python -m tuyapower
+python3 -m tuyapower
 ```
 
  ## Exmaple Usage
