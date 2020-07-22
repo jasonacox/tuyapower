@@ -5,7 +5,7 @@ with open("tuyapower/README.md", "r") as fh:
 
 setuptools.setup(
     name="tuyapower",
-    version="0.0.19",
+    version="0.0.20",
     author="Jason Cox",
     author_email="jason@jasonacox.com",
     description="Pull power and state data from Tuya WiFi smart devices",
@@ -13,6 +13,9 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/jasonacox/tuyapower",
     packages=setuptools.find_packages(),
+    install_requires=[
+        'pytuya',
+    ],
     classifiers=[
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 3",
