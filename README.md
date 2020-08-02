@@ -2,7 +2,7 @@
 This python module will poll WiFi [Tuya](https://en.tuya.com/) campatible Smart Plugs for state (on/off), current (mA), voltage (V), and power (wattage). 
 
 # Description
-This project is based on the python pytuya library to poll [Tuya](https://en.tuya.com/) campatible Smart Plugs for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `test.py` script responds with a human redable output of state (on/off), current (mA), voltage (V), and power (W).  The `test-json.py` script responds with JSON containing the same but adds a timestamp for convient time series processing.
+valueThis project is based on the python pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `test.py` script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The `test-json.py` script responds with JSON containing the same but adds a timestamp for convenient time series processing.
 
 ## Preparation
 The tuyapower module includes a scanner function `deviceScan()` to find Smart Plugs on your network.  However, it may or may not be able to detect all of them. You can use the following to manually identify the required IP address and Device ID of the smart plug:
@@ -33,15 +33,33 @@ Install pip and python libraries if you haven't already:
  python3 -m pip install tuyapower       # Pull this tuyapower module from PyPi
  ```
  
-### Scan Tool 
+### Tuya Device Scan Tool 
 The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Key and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).
 
 You can run the scanner from the command line using this:
+
 ```bash
 python3 -m tuyapower
 ```
 
- ## Exmaple Usage
+By default, the scan functions will retry 15 times to find new devices. If you are not seeing all your devices, you can increase max_retries by passing an optional arguments (ex. 50 retries):
+
+```bash
+# command line
+python3 -m tuyapower 50
+```
+
+```python
+# invoke verbose interactive scan
+tuyapower.scan(50)
+
+# return payload of devices
+devices = tuyapower.deviceScan(false, 50)
+```
+
+## Programming Usage
+You can import the tuyapower module into your own python projects and use the deviceInfo(), deviceJSON(), deviceScan() and devicePrint() functions to access data on your Tuya devices.  Here are some examples:
+
  ``` python
 # Poll a Single Devices
 import tuyapower
