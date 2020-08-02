@@ -2,6 +2,10 @@
 #
 # TuyaScan - Scan for tuya devices on the network broadcasting on UDP port 6666 and 6667
 # 
+# *****************************************************
+# ** Depreciated: Use "python -m tuyapower" instead. **
+# *****************************************************
+#
 # Author: Jason A. Cox
 # For more information see https://github.com/jasonacox/tuyapower
 
