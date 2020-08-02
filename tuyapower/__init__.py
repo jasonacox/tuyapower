@@ -240,13 +240,13 @@ def appenddevice(newdevice, devices):
     return False
 
 # Scan function shortcut
-def scan():
+def scan(maxretry = MAXCOUNT):
     """Sans your network for smart plug devices with output to stdout
     """
-    d = deviceScan(True)
+    d = deviceScan(True,maxretry)
 
 # Scan function
-def deviceScan(verbose = False):
+def deviceScan(verbose = False,maxretry = MAXCOUNT):
     """Scans your network for smart plug devices
         devices = tuyapower.deviceScan(verbose)
 
@@ -279,7 +279,7 @@ def deviceScan(verbose = False):
     clients.settimeout(TIMEOUT)
 
     if(verbose):
-        print("Scanning on UDP ports %s and %s for devices...\n"%(UDPPORT,UDPPORTS))
+        print("Scanning on UDP ports %s and %s for devices (%s retries)...\n"%(UDPPORT,UDPPORTS,maxretry))
 
     # globals
     devices={}
@@ -288,7 +288,7 @@ def deviceScan(verbose = False):
     spinnerx = 0
     spinner = "|/-\\|"
 
-    while (count + counts) <= MAXCOUNT:
+    while (count + counts) <= maxretry:
         note = 'invalid'
         if(verbose):
             print("Scanning... %s\r"%(spinner[spinnerx]), end = '')

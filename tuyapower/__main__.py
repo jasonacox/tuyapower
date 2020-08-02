@@ -12,5 +12,18 @@
 import tuyapower
 import sys
 
+retries = 0
+
 print("TuyaPower (Tuya compatible smart plug scanner) [%s]\n"%tuyapower.version)
-tuyapower.scan()
+
+try:
+    if len(sys.argv) > 1:
+        retries = int(sys.argv[1])
+except:
+    print("Usage: python -m tuyapower <max_retry>")
+    sys.exit(2)
+
+if retries > 0:
+    tuyapower.scan(retries)
+else:
+    tuyapower.scan()
