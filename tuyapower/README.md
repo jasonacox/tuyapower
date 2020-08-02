@@ -40,7 +40,7 @@ python3 -m pip install tuyapower       # Pull this tuyapower module from PyPi
     verbose = False
     devices = tuyapower.deviceScan(verbose)
     ```
-* scan(max_retries=15) - This is a shortcut for deviceScan() that prints formatted output to stdout for UDP ports 6666 and 6667. By default, the scan functions will retry 15 times to find new devices. If you are not seeing all your devices, you can increase max_retries by passing an optional arguments .
+* scan(max_retries=15) - This is a shortcut for deviceScan() that prints formatted output to stdout for UDP ports 6666 and 6667. By default, the scan functions will retry 15 times to find new devices. If you are not seeing all your devices, you can increase max_retries.
 
 ## Parameters:
 * PLUGID = Device ID e.g. 01234567891234567890
