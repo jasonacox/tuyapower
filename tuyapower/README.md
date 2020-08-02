@@ -9,12 +9,14 @@ Python module to pull power and state data from Tuya WiFi smart devices.  _Teste
 This module requires: pycrypto, pytuya, Crypto and pyaes.
 
 ```bash
- sudo apt-get install python-crypto python-pip		
- pip install pycrypto
- pip install pytuya
- # pip install Crypto		
- # pip install pyaes		
+# Install required libraries
+sudo apt-get install python-crypto python-pip		# for RPi, Linux
+python3 -m pip install pycryptodome    # or pycrypto or Crypto
+python3 -m pip install pyaes
+python3 -m pip install pytuya
+python3 -m pip install tuyapower       # Pull this tuyapower module from PyPi
 ```
+
  For Windows 10 users or if you get errors related to Crypto, try installing the pycryptodome module:
  ```bash
  pip install pycryptodome
@@ -33,12 +35,12 @@ This module requires: pycrypto, pytuya, Crypto and pyaes.
     ```python
     dataJSON = tuyapower.deviceJSON(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
-* deviceScan(verbose) - Scans network for smart plug devices and return dictionary of devices and power data.
+* deviceScan(verbose, max_retries=15) - Scans network for smart plug devices and return dictionary of devices and power data.
     ```python
     verbose = False
     devices = tuyapower.deviceScan(verbose)
     ```
-* scan() - This is a shortcut for deviceScan() that prints formatted output to stdout for UDP ports 6666 and 6667
+* scan(max_retries=15) - This is a shortcut for deviceScan() that prints formatted output to stdout for UDP ports 6666 and 6667. By default, the scan functions will retry 15 times to find new devices. If you are not seeing all your devices, you can increase max_retries by passing an optional arguments .
 
 ## Parameters:
 * PLUGID = Device ID e.g. 01234567891234567890
@@ -46,6 +48,7 @@ This module requires: pycrypto, pytuya, Crypto and pyaes.
 * PLUGKEY = Device Key e.g. 0123456789abcdef
 * PLUGVERS = Version of Protocol 3.1 or 3.3
 * verbose = Print more details - True or False (default is False)
+* max_retries = Number of times to retry scan of new devices (default is 15)
  
 ## Response Data: 
 * on = Switch state - true or false
