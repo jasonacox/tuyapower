@@ -2,7 +2,12 @@
 This python module will poll WiFi [Tuya](https://en.tuya.com/) campatible Smart Plugs for state (on/off), current (mA), voltage (V), and power (wattage). 
 
 # Description
-valueThis project is based on the python pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `test.py` script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The `test-json.py` script responds with JSON containing the same but adds a timestamp for convenient time series processing.
+This project is based on the python pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `test.py` script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The `test-json.py` script responds with JSON containing the same but adds a timestamp for convenient time series processing.
+
+## Quick Start Device Scan
+```bash
+python3 -m tuyapower
+```
 
 ## Preparation
 The tuyapower module includes a scanner function `deviceScan()` to find Smart Plugs on your network.  However, it may or may not be able to detect all of them. You can use the following to manually identify the required IP address and Device ID of the smart plug:
