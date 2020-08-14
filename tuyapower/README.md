@@ -104,3 +104,18 @@ You can run the scanner from the command line using this:
 ```bash
 python -m tuyapower
 ```
+
+By default, the scan functions will retry 15 times to find new devices. If you are not seeing all your devices, you can increase max_retries by passing an optional arguments (ex. 50 retries):
+
+```bash
+# command line
+python -m tuyapower 50
+```
+
+```python
+# invoke verbose interactive scan
+tuyapower.scan(50)
+
+# return payload of devices
+devices = tuyapower.deviceScan(false, 50)
+```
