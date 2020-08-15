@@ -1,68 +1,95 @@
 # TuyaPower - Python Module
-This python module will poll WiFi [Tuya](https://en.tuya.com/) campatible Smart Plugs for state (on/off), current (mA), voltage (V), and power (wattage). 
 
-# Description
-This project is based on the python pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `test.py` script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The `test-json.py` script responds with JSON containing the same but adds a timestamp for convenient time series processing.
+This python module will poll WiFi [Tuya](https://en.tuya.com/) compatible Smart Plugs/Switches/Lights for state (on/off), current (mA), voltage (V), and power (wattage).
 
-## Quick Start Device Scan
-```bash
-python3 -m tuyapower
-```
+## Description
 
-## Preparation
-The tuyapower module includes a scanner function `deviceScan()` to find Smart Plugs on your network.  However, it may or may not be able to detect all of them. You can use the following to manually identify the required IP address and Device ID of the smart plug:
+This module uses the python pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs, Switches and Lights for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `plugpower.py` script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The `plugjson.py` script responds with JSON containing the same but adds a timestamp for convenient time series processing.
 
-1. Download the Smart Life - Smart Living app for iPhone or Android. Pair with your smart plug (this is important as you cannot monitor a plug that has not been paired).  
-	* https://itunes.apple.com/us/app/smart-life-smart-living/id1115101477?mt=8
-	* https://play.google.com/store/apps/details?id=com.tuya.smartlife&hl=en
-2. Device ID - Inside the app, select the plug you wish to monitor, select the 3 dots(Jinvoo) or the edit/pencil icon(Tuya & SmartLife) in the top right and then "Device Info".  The page should display "Device ID" which the script will use to poll the plug. It's also worth noting the MAC address of the device as it can come in handy in step 3.
-3. IP Address - If your router displays a list of all the devices that are connected to it, you can search for the MAC address of the device. This is often the quickest way to locate your device IP.
+## TuyaPower Setup  
 
-	Alternatively, you will need to manually determine what IP address your network assigned to the Smart Plug - this is more difficult but it looks like `arp-scan` can help identify devices on your network.  WiFi Routers often have a list of devices connected as well. Look for devices with a name like "ESP_xxxxxx". Many modern routers allow you to set the hostname of connected devices to something more memorable, once you have located it.
-
-4. Firmware Version - Devices with newer firmware (1.0.5 and above) are typically using a different protocol (3.3). These devices need to be communicated with using encryption and the resultant data is packaged slightly differently. It's a good idea therefore to check the Firmware version of the device(s) too. In the Tuya/SmartLife/Jinvoo app there will be a device option "Check for Firmware Upgrade" or similar. Open this option and take note of the Wi-Fi Module & MCU Module numbers. These are usually the same.  
-	* Firmware 1.0.4 and lower:  DEVICEVERS = 3.1
-	* Firmware 1.0.5 and above:  DEVICEVERS = 3.3 
-
-5. Device Key - If your device is running Firmware 1.0.5 or above, you will need to obtain the Device Key. This is used to connect with the device  decrypt the power consumption data. For details on how to do this, see point 2: https://github.com/clach04/python-tuya/wiki 
-
-## Setup  
 _Tested on RaspberryPi, Linux, Windows 10 and MacOS._ 
-Install pip and python libraries if you haven't already:
+Install pip and python libraries if you haven't already.
+
 ```bash
 # Install required libraries
- sudo apt-get install python-crypto python-pip		# for RPi, Linux
- python3 -m pip install pycryptodome    # or pycrypto or Crypto
+ sudo apt-get install python-crypto python-pip  # for RPi, Linux
+ python3 -m pip install pycryptodome            # or pycrypto or Crypto
  python3 -m pip install pyaes
  python3 -m pip install pytuya
- python3 -m pip install tuyapower       # Pull this tuyapower module from PyPi
+ python3 -m pip install tuyapower               # Pull this tuyapower module from PyPi
  ```
- 
-### Tuya Device Scan Tool 
-The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Key and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).
 
-You can run the scanner from the command line using this:
+## Tuya Device Preparation
 
+Pulling data from Tuya devices on your network requires that you have the Device *IP*, *ID*, *VERSION* and *KEY* (for 3.3 devices). The `tuyapower` module includes a scanner function to find Smart Plugs on your network.  This will scan the network and identify Device's *IP*, *ID* and *VERSION*.  It will not be able to get the local *KEY*.  Since newer 3.3 devices will require the *KEY*, the following steps will help you determine the *KEY*s for your devices:
+
+### Get the Tuya Device KEY
+
+1. Download the "Smart Life" - Smart Living app for iPhone or Android. Pair with your smart plug (this is important as you cannot monitor a plug that has not been paired).  
+    * https://itunes.apple.com/us/app/smart-life-smart-living/id1115101477?mt=8
+    * https://play.google.com/store/apps/details?id=com.tuya.smartlife&hl=en
+2. For Device IP, ID and VERSION: Run the tuyapower scan to get a list of Tuya devices on your network along with their device IP, ID and VERSION number (3.1 or 3.3):
 ```bash
 python3 -m tuyapower
 ```
+3. For Device KEY: If your device is running Firmware 1.0.5 or above, you will need to obtain the Device Key. This is used to connect with the device and decrypt the response data. The following are instructions to do this and are based on <https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md>:
 
-By default, the scan functions will retry 15 times to find new devices. If you are not seeing all your devices, you can increase max_retries by passing an optional arguments (ex. 50 retries):
+    * Create a Tuya developer account on [iot.tuya.com](https://iot.tuya.com/)
+    * Go to Cloud Development -> Create a project  (note the Authorization Key: *ID* & *Secret* for below)
+    * Go to Cloud Development -> select your project -> Project Overview -> Linked Device -> Link devices by App Account (tab)
+    * Click 'Add App Account' and scan the QR code using the *Smart Life app* (step 1 above) by going to the "Me" tab and clicking on the QR reading code button [..] upper right hand corner of the app. When you scan the QR code from the tuya.com website, it will link all of the devices registered in Smart Life into your Tuya IoT project.
+    * From your PC/Mac run this in the command line to install the Tuya CLI: `npm i @tuyapi/cli -g`
+    * Next run: `tuya-cli wizard` and it will prompt you for the API *ID* key and *Secret* from your Tuya IoT project we noted above.  The Virtual ID is the Device ID from step 2 above or in the Device List on your Tuya IoT project.
+    * The wizard will take a while but eventually print a JSON looking output that contains the name, id and key of the registered device(s).  This is the KEY (PLUGKEY) you will use to poll your device.
 
-```bash
-# command line
-python3 -m tuyapower 50
-```
+For a helpful video walk-through of getting the KEYS you can also watch this great _Tech With Eddie_ YouTube tutorial: <https://youtu.be/oq0JL_wicKg>  
 
-```python
-# invoke verbose interactive scan
-tuyapower.scan(50)
+## Programming with TuyaPower
 
-# return payload of devices
-devices = tuyapower.deviceScan(false, 50)
-```
+### TuyaPower Module Functions
 
-## Programming Usage
+* deviceInfo - Poll device and return on, w, mA, V and err data.
+    ```python
+    (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
+    ```
+* devicePrint - Poll device and print formatted output to stdout.
+    ```python
+    tuyapower.devicePrint(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
+    ```
+* deviceJSON - Poll device and return JSON formatted details.
+    ```python
+    dataJSON = tuyapower.deviceJSON(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
+    ```
+* deviceScan(verbose, max_retries=15) - Scans network for smart plug devices and return dictionary of devices and power data.
+    ```python
+    verbose = False
+    devices = tuyapower.deviceScan(verbose)
+    ```
+* scan(max_retries=15) - This is a shortcut for deviceScan() that prints formatted output to stdout for UDP ports 6666 and 6667. By default, the scan functions will retry 15 times to find new devices. If you are not seeing all your devices, you can increase max_retries.
+
+### Parameters:
+
+* PLUGID = Device ID e.g. 01234567891234567890
+* PLUGIP = Device IP Address e.g. 10.0.1.99
+* PLUGKEY = Device Key e.g. 0123456789abcdef
+* PLUGVERS = Version of Protocol 3.1 or 3.3
+* verbose = Print more details - True or False (default is False)
+* max_retries = Number of times to retry scan of new devices (default is 15)
+
+### Response Data:
+
+* on = Switch state - true or false
+* w = Wattage 
+* mA = milliamps 
+* V = Voltage 
+* err = Error message or OK
+* devices = Dictionary of all devices found with power data if available
+
+Note: If error occurs, on will be set to false, w, mA and V will be set to -99.0.
+
+### Programming Examples
+
 You can import the tuyapower module into your own python projects and use the deviceInfo(), deviceJSON(), deviceScan() and devicePrint() functions to access data on your Tuya devices.  Here are some examples:
 
  ``` python
@@ -118,9 +145,35 @@ devices = tuyapower.deviceScan()
         print("Device at %s: ID %s, state=%s, W=%s, mA=%s, V=%s [%s]"%(ip,id,on,w,mA,V,err))
 ```
 
-## Setup: Optional - Docker
+## Tuya Device Scan Tool
+
+The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Key and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).
+
+You can run the scanner from the command line using this:
+
+```bash
+python3 -m tuyapower
+```
+
+By default, the scan functions will retry 15 times to find new devices. If you are not seeing all your devices, you can increase max_retries by passing an optional arguments (ex. 50 retries):
+
+```bash
+# command line
+python3 -m tuyapower 50
+```
+
+```python
+# invoke verbose interactive scan
+tuyapower.scan(50)
+
+# return payload of devices
+devices = tuyapower.deviceScan(false, 50)
+```
+
+## Docker Setup (Optional)
+
 _Tested on Linux and MacOS._
-Build a docker container using `Dockerfile` 
+Build a docker container using `Dockerfile`
 ```bash
 # build tuyapower container
 docker build -t tuyapower .
@@ -134,18 +187,22 @@ docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="012
 docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" -e PLUGVERS="3.3" tuyapower
 ```
 
-Please note, these smart plugs and this script do not hold power usage data in memory so the "Projected usage" reported is an estimate based on current power readings and assumed steady state over time. 
+## Example Products
 
-## Example Products 
-* TanTan Smart Plug Mini Wi-Fi Enabled Outlet with Energy Monitoring - https://www.amazon.com/gp/product/B075Z17987/ref=oh_aui_detailpage_o03_s00?ie=UTF8&psc=1
-* SKYROKU SM-PW701U Wi-Fi Plug Smart Plug - see https://wikidevi.com/wiki/Xenon_SM-PW701U
+* TanTan Smart Plug Mini Wi-Fi Enabled Outlet with Energy Monitoring (3.1 protocol device) - https://www.amazon.com/gp/product/B075Z17987/ref=oh_aui_detailpage_o03_s00?ie=UTF8&psc=1
+* SKYROKU SM-PW701U Wi-Fi Plug Smart Plug - https://wikidevi.com/wiki/Xenon_SM-PW701U
 * Wuudi SM-S0301-US - WIFI Smart Power Socket Multi Plug with 4 AC Outlets and 4 USB Charging
-* Gosund SP1 - WiFi High Amp RatedSmart Power Socket (eu) using 3.3 Protocol - see https://www.amazon.de/Steckdose-Stromverbrauch-Funktion-Fernsteurung-Netzwerk/dp/B07B911Y6V
+* Gosund SP1 - WiFi High Amp RatedSmart Power Socket (eu) (3.3 protocol device) - https://www.amazon.de/Steckdose-Stromverbrauch-Funktion-Fernsteurung-Netzwerk/dp/B07B911Y6V
+* Gosund - Smart Light Switch (us) (3.3 protocol device) - https://www.amazon.com/gp/product/B07DQG4K52/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1 
+* GoKlug - Smart Plug with Energy Monitoring (us) (3.3 protocol device) - https://www.amazon.com/gp/product/B083SK787X/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1
+* Treatlife WiFi Light Switch 3 Way Switch (us) (3.3 protocol device) - https://www.amazon.com/gp/product/B07V4X7BRT/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&psc=1
 
-## Acknowledgements 
+## Acknowledgements
+
 * https://github.com/clach04/python-tuya
 * https://github.com/jasonacox.com/powermonitor
 
 ## Contributors
+
 * Jason A. Cox ([jasonacox](https://github.com/jasonacox))
-* Phill Healey ([codeclinic](https://github.com/codeclinic)) - Integration for firmwares (1.0.5+) / protocol v3.3 & commandline arguments.
+* Phill Healey ([codeclinic](https://github.com/codeclinic)) - Integration for firmware 1.0.5+ / protocol v3.3 & commandline arguments.
