@@ -6,7 +6,7 @@ This python module will poll WiFi [Tuya](https://en.tuya.com/) compatible Smart 
 
 ## Description
 
-This module uses the python pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs, Switches and Lights for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The `plugpower.py` script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The `plugjson.py` script responds with JSON containing the same but adds a timestamp for convenient time series processing.
+This module uses the python pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs, Switches and Lights for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The [plugpower.py](plugpower.py) script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The [plugjson.py](plugjson.py) script responds with JSON containing the same but adds a timestamp for convenient time series processing.
 
 ## TuyaPower Setup  
 
@@ -35,7 +35,7 @@ Pulling data from Tuya devices on your network requires that you have the Device
     ```bash
     python3 -m tuyapower
     ```
-3. For Device KEY: If your device is running Firmware 1.0.5 or above, you will need to obtain the Device Key. This is used to connect with the device and decrypt the response data. The following are instructions to do this and are based on <https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md>:
+3. For Device KEY: If your device is running the latest protocol version 3.3 (often seen with Firmware 1.0.5 or above), you will need to obtain the Device Key. This is used to connect with the device and decrypt the response data. The following are instructions to do this and are based on <https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md>:
 
     * Create a Tuya developer account on [iot.tuya.com](https://iot.tuya.com/)
     * Go to Cloud Development -> Create a project  (note the Authorization Key: *ID* & *Secret* for below)
