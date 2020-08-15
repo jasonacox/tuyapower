@@ -1,5 +1,7 @@
 # TuyaPower - Python Module
 
+[![Build Status](https://travis-ci.org/jasonacox/tuyapower.svg?branch=master)](https://travis-ci.org/jasonacox/tuyapower)
+
 This python module will poll WiFi [Tuya](https://en.tuya.com/) compatible Smart Plugs/Switches/Lights for state (on/off), current (mA), voltage (V), and power (wattage).
 
 ## Description
