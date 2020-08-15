@@ -8,7 +8,6 @@ python:
 install:
   - pip install pycryptodome
   - pip install pytuya
-  - pip install tuyapower
 
 # command to run tests
 script:
