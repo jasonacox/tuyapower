@@ -32,9 +32,9 @@ Pulling data from Tuya devices on your network requires that you have the Device
     * https://itunes.apple.com/us/app/smart-life-smart-living/id1115101477?mt=8
     * https://play.google.com/store/apps/details?id=com.tuya.smartlife&hl=en
 2. For Device IP, ID and VERSION: Run the tuyapower scan to get a list of Tuya devices on your network along with their device IP, ID and VERSION number (3.1 or 3.3):
-```bash
-python3 -m tuyapower
-```
+    ```bash
+    python3 -m tuyapower
+    ```
 3. For Device KEY: If your device is running Firmware 1.0.5 or above, you will need to obtain the Device Key. This is used to connect with the device and decrypt the response data. The following are instructions to do this and are based on <https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md>:
 
     * Create a Tuya developer account on [iot.tuya.com](https://iot.tuya.com/)
