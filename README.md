@@ -200,7 +200,7 @@ docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="012
 ## Acknowledgements
 
 * https://github.com/clach04/python-tuya
-* https://github.com/jasonacox.com/powermonitor
+* https://github.com/jasonacox/powermonitor
 
 ## Contributors
 
