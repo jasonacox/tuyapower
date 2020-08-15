@@ -37,15 +37,16 @@ Pulling data from Tuya devices on your network requires that you have the Device
     ```
 3. For Device KEY: If your device is running the latest protocol version 3.3 (often seen with Firmware 1.0.5 or above), you will need to obtain the Device Key. This is used to connect with the device and decrypt the response data. The following are instructions to do this and are based on <https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md>:
 
-    * Create a Tuya developer account on [iot.tuya.com](https://iot.tuya.com/)
+    * Create a Tuya developer account on [iot.tuya.com](https://iot.tuya.com/) and log in.
     * Go to Cloud Development -> Create a project  (note the Authorization Key: *ID* & *Secret* for below)
     * Go to Cloud Development -> select your project -> Project Overview -> Linked Device -> Link devices by App Account (tab)
-    * Click 'Add App Account' and scan the QR code using the *Smart Life app* (step 1 above) by going to the "Me" tab and clicking on the QR reading code button [..] upper right hand corner of the app. When you scan the QR code from the tuya.com website, it will link all of the devices registered in Smart Life into your Tuya IoT project.
+    * Click 'Add App Account' and it will display a QR code. Scan the QR code with the *Smart Life app* on your  Phone (see step 1 above) by going to the "Me" tab in the *Smart Life app* and clicking on the QR code button [..] in the upper right hand corner of the app. When you scan the QR code, it will link all of the devices registered in your *Smart Life app* into your Tuya IoT project.
     * From your PC/Mac run this in the command line to install the Tuya CLI: `npm i @tuyapi/cli -g`
     * Next run: `tuya-cli wizard` and it will prompt you for the API *ID* key and *Secret* from your Tuya IoT project we noted above.  The Virtual ID is the Device ID from step 2 above or in the Device List on your Tuya IoT project.
     * The wizard will take a while but eventually print a JSON looking output that contains the name, id and key of the registered device(s).  This is the KEY (PLUGKEY) you will use to poll your device.
 
-For a helpful video walk-through of getting the KEYS you can also watch this great _Tech With Eddie_ YouTube tutorial: <https://youtu.be/oq0JL_wicKg>  
+Note: If you reset or re-pair your smart devices, they will reset their local KEY and you will need to repeat these steps above.
+>> For a helpful video walk-through of getting the KEYS you can also watch this great _Tech With Eddie_ YouTube tutorial: <https://youtu.be/oq0JL_wicKg>.
 
 ## Programming with TuyaPower
 
