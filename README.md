@@ -46,7 +46,8 @@ Pulling data from Tuya devices on your network requires that you have the Device
     * The wizard will take a while but eventually print a JSON looking output that contains the name, id and key of the registered device(s).  This is the KEY (PLUGKEY) you will use to poll your device.
 
 Note: If you reset or re-pair your smart devices, they will reset their local KEY and you will need to repeat these steps above.
->> For a helpful video walk-through of getting the KEYS you can also watch this great _Tech With Eddie_ YouTube tutorial: <https://youtu.be/oq0JL_wicKg>.
+
+For a helpful video walk-through of getting the KEYS you can also watch this great _Tech With Eddie_ YouTube tutorial: <https://youtu.be/oq0JL_wicKg>.
 
 ## Programming with TuyaPower
 
@@ -150,7 +151,7 @@ devices = tuyapower.deviceScan()
 
 ## Tuya Device Scan Tool
 
-The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Key and Version and will print that and their stats to stdout.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats (via dictionary result).
+The function `tuyapower.scan()` will listen to your local network and identify Tuya devices broadcasting their IP, Device ID, Product Key (not the Local KEY) and protocol Version.  It will print the list of devices and for 3.1 protocol devices that don't require local KEY, it will display their energy stats.  This can help you get a list of compatible devices on your network. The `tuyapower.deviceScan()` function returns all found devices and their stats via a dictionary result.
 
 You can run the scanner from the command line using this:
 
