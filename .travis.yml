@@ -4,9 +4,13 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-include:
+
+# command to install dependencies
+install:
   - pip install pycryptodome
   - pip install pytuya
+
+# command to run tests
 script:
   - python test.py
   - pip install tinytuya
