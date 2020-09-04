@@ -4,20 +4,10 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-
-stages:
-  tinytuya
-  pytuya
-
-jobs:
-  include:
-    - stage: tinytuya
-      script:
-        - pip install pycryptodome
-        - pip install tinytuya
-        - python test.py
-    - stage: pytuya
-      script:
-        - pip install pycryptodome
-        - pip install pytuya
-        - python test.py
+include:
+  - pip install pycryptodome
+  - pip install pytuya
+script:
+  - python test.py
+  - pip install tinytuya
+  - python test.py
