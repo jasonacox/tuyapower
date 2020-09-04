@@ -4,11 +4,20 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-# command to install dependencies
-install:
-  - pip install pycryptodome
-  - pip install pytuya
 
-# command to run tests
-script:
-  - python test.py
+stages:
+  tinytuya
+  pytuya
+
+jobs:
+  include:
+    - stage: tinytuya
+      script:
+        - pip install pycryptodome
+        - pip install tinytuya
+        - python test.py
+    - stage: pytuya
+      script:
+        - pip install pycryptodome
+        - pip install pytuya
+        - python test.py
