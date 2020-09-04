@@ -38,7 +38,18 @@ import socket
 import json
 from hashlib import md5
 from Crypto.Cipher import AES
-import pytuya
+# Attempt to load tinytuya but fall back to pytuya if not available
+try:
+    import tinytuya
+    api = "tinytuya"
+    api_ver = tinytuya.__version__
+except ImportError:
+    import pytuya
+    api = "pytuya"
+    try:
+        api_ver = pytuya.__version__
+    except:
+        api_ver = "unknown"
 
 name = "tuyapower"
 version_tuple = (0, 0, 23)
@@ -49,10 +60,7 @@ log = logging.getLogger(__name__)
 
 log.info("%s version %s", __name__, version)
 log.info("Python %s on %s", sys.version, sys.platform)
-try:
-    log.info("Using pytuya version %r", pytuya.__version__)
-except:
-    log.info("Using pytuya unknown version")
+log.info("Using %s version %r", api, api_ver)
     
 # how my times to try to probe plug before giving up
 RETRY = 5
@@ -92,7 +100,11 @@ def deviceInfo(deviceid, ip, key, vers):
     while True:
         w, mA, V = _DEFAULTS
         try:
-            d = pytuya.OutletDevice(deviceid, ip, key)
+            if(api == "tinytuya"):
+                d = tinytuya.OutletDevice(deviceid, ip, key)
+            else:
+                d = pytuya.OutletDevice(deviceid, ip, key)
+
             if vers == "3.3":
                 d.set_version(3.3)
 
@@ -173,7 +185,7 @@ def devicePrint(deviceid, ip, key='0123456789abcdef', vers='3.1'):
     month = (week * 52.0) / 12.0
 
     # Print Output
-    print("TuyaPower (Tuya Power Stats) [%s]"%version)
+    print("TuyaPower (Tuya Power Stats) [%s] %s"%(version,api))
     print("\nDevice %s at %s key %s protocol %s:" % (deviceid,ip,key,vers))
     print("    Switch On: %r" % on)
     print("    Power (W): %f" % w)
@@ -341,7 +353,7 @@ def deviceScan(verbose = False,maxretry = MAXCOUNT):
             else:
                 counts = floor(counts - 1)
             if(verbose):
-                print("FOUND Device [%s payload]: %s\n    ID = %s, productKey = %s, Version = %s" % (note,ip,gwId,productKey,version))
+                print("FOUND Device [%s payload]: %s\n    ID = %s, product = %s, Version = %s" % (note,ip,gwId,productKey,version))
             try:
                 if(version == '3.1'):
                     # Version 3.1 - no device key requires - poll for status

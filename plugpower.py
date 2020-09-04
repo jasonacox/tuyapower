@@ -13,7 +13,7 @@ import tuyapower
 
 # Read command line options or set defaults
 if (len(sys.argv) < 2) and not (("PLUGID" in os.environ) or ("PLUGIP" in os.environ)):
-    print("TuyaPower (Tuya Power Stats) [%s]"%tuyapower.__version__)
+    print("TuyaPower (Tuya Power Stats) [%s] %s [%s]"%(tuyapower.__version__,tuyapower.api,tuyapower.api_ver))
     print("Usage: %s <PLUGID> <PLUGIP> <PLUGKEY> <PLUGVERS>\n" % sys.argv[0])
     print("    Required: <PLUGID> is the Device ID e.g. 01234567891234567890")
     print("              <PLUGIP> is the IP address of the smart plug e.g. 10.0.1.99")
@@ -49,7 +49,7 @@ week = 7.0 * day
 month = (week * 52.0) / 12.0
 
 # Print Output
-print("TuyaPower (Tuya Power Stats) [%s]"%tuyapower.__version__)
+print("TuyaPower (Tuya Power Stats) [%s] %s [%s]"%(tuyapower.__version__,tuyapower.api,tuyapower.api_ver))
 print("\nDevice %s at %s key %s protocol %s:" % (PLUGID,PLUGIP,PLUGKEY,PLUGVERS))
 print("    Switch On: %r" % on)
 print("    Power (W): %f" % w)

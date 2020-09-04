@@ -14,7 +14,7 @@ import sys
 
 retries = 0
 
-print("TuyaPower (Tuya compatible smart plug scanner) [%s]\n"%tuyapower.version)
+print("TuyaPower (Tuya compatible smart plug scanner) [%s] %s [%s]\n"%(tuyapower.version,tuyapower.api,tuyapower.api_ver))
 
 try:
     if len(sys.argv) > 1:

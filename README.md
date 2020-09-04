@@ -7,19 +7,20 @@ This python module will poll WiFi [Tuya](https://en.tuya.com/) compatible Smart 
 
 ## Description
 
-This module uses the python pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs, Switches and Lights for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The [plugpower.py](plugpower.py) script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The [plugjson.py](plugjson.py) script responds with JSON containing the same but adds a timestamp for convenient time series processing.
+This module uses the python [tinytuya](https://github.com/jasonacox/tinytuya) or pytuya library to poll [Tuya](https://en.tuya.com/) compatible Smart Plugs, Switches and Lights for state and power data that can be used for point in time monitoring or stored for trending.  There are two test scripts here. The [plugpower.py](plugpower.py) script responds with a human readable output of state (on/off), current (mA), voltage (V), and power (W).  The [plugjson.py](plugjson.py) script responds with JSON containing the same but adds a timestamp for convenient time series processing.
 
 ## TuyaPower Setup  
 
 _Tested on RaspberryPi, Linux, Windows 10 and MacOS._ 
-Install pip and python libraries if you haven't already.
+Install pip and the following python libraries if you haven't already. 
+
+TuyaPower has been updated to use `tinytuya`, a fork of `pytuya` that adds support for device IDs of 20 and 22 characters (pytuya only supports 20 character IDs).  Install `tinytuya` to take advantage of that feature.
 
 ```bash
 # Install required libraries
  sudo apt-get install python-crypto python-pip  # for RPi, Linux
- python3 -m pip install pycryptodome            # or pycrypto or Crypto
- python3 -m pip install pyaes
- python3 -m pip install pytuya
+ python3 -m pip install pycryptodome            # or pycrypto, pyaes, Crypto
+ python3 -m pip install tinytuya                # or pytuya
  python3 -m pip install tuyapower               # Pull this tuyapower module from PyPi
  ```
 
@@ -204,8 +205,14 @@ docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="012
 
 ## Acknowledgements
 
-* https://github.com/clach04/python-tuya
-* https://github.com/jasonacox/powermonitor
+  * TuyaAPI https://github.com/codetheweb/tuyapi by codetheweb and blackrozes
+    For protocol reverse engineering, additional protocol reverse engineering from jepsonrob and clach04
+  * PyTuya https://github.com/clach04/python-tuya by clach04
+    The origin of this python module (now abandoned)
+  * https://github.com/rospogrigio/localtuya-homeassistant by rospogrigio
+    Edit to pytuya to support devices with Device IDs of 22 characters
+  * PowerMonitor https://github.com/jasonacox/powermonitor
+
 
 ## Contributors
 

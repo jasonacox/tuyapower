@@ -10,15 +10,14 @@ https://github.com/jasonacox/tuyapower
 Python module to pull power and state data from Tuya WiFi smart devices.  _Tested on RaspberryPi, Linux, Windows 10 and MacOS._ 
 
 # Preparation
-This module requires: pycrypto, pytuya, Crypto and pyaes.
+This module requires: pycryptodome and tinytuya (replaces pytuya).
 
 ```bash
 # Install required libraries
 sudo apt-get install python-crypto python-pip		# for RPi, Linux
-python3 -m pip install pycryptodome    # or pycrypto or Crypto
-python3 -m pip install pyaes
-python3 -m pip install pytuya
-python3 -m pip install tuyapower       # Pull this tuyapower module from PyPi
+python3 -m pip install pycryptodome    # or pycrypto, pyaes or Crypto
+python3 -m pip install tinytuya        # or pytuya
+python3 -m pip install tuyapower       # this tuyapower module 
 ```
 
  For Windows 10 users or if you get errors related to Crypto, try installing the pycryptodome module:

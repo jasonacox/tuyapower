@@ -1,11 +1,13 @@
 import setuptools
 
+from tuyapower import __version__
+
 with open("tuyapower/README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="tuyapower",
-    version="0.0.23",
+    version=__version__,
     author="Jason Cox",
     author_email="jason@jasonacox.com",
     description="Pull power and state data from Tuya WiFi smart devices",
@@ -14,7 +16,7 @@ setuptools.setup(
     url="https://github.com/jasonacox/tuyapower",
     packages=setuptools.find_packages(),
     install_requires=[
-        'pytuya',
+        'tinytuya',  # NOTE you can also use pytuya
     ],
     classifiers=[
         "Programming Language :: Python :: 2",
