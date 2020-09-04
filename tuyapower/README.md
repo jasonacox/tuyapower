@@ -1,4 +1,8 @@
 # TuyaPower - PyPi Module
+
+[![Build Status](https://travis-ci.org/jasonacox/tuyapower.svg?branch=master)](https://travis-ci.org/jasonacox/tuyapower)
+[![PyPI version](https://badge.fury.io/py/tuyapower.svg)](https://badge.fury.io/py/tuyapower)
+
 Author: Jason A. Cox 
 https://github.com/jasonacox/tuyapower
 
