@@ -52,7 +52,7 @@ except ImportError:
         api_ver = "unknown"
 
 name = "tuyapower"
-version_tuple = (0, 0, 23)
+version_tuple = (0, 0, 24)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -107,9 +107,37 @@ def deviceInfo(deviceid, ip, key, vers):
 
             if vers == "3.3":
                 d.set_version(3.3)
-
             data = d.status()
-            if d:
+
+        except KeyboardInterrupt:
+            log.info(
+                "CANCEL: Received interrupt from user while polling plug %s [%s]."
+                % (deviceid, ip)
+            )
+            sw = False
+            return (sw, w, mA, V, "User Interrupt")
+
+        except:
+            watchdog += 1
+            if watchdog > RETRY:
+                log.info(
+                    "TIMEOUT: No response from plug %s [%s] after %s attempts."
+                    % (deviceid, ip, RETRY)
+                )
+                sw = False
+                return (sw, w, mA, V, "Timeout polling device")
+            try:
+                sleep(2)
+            except KeyboardInterrupt:
+                log.info(
+                    "CANCEL: Received interrupt from user while polling plug %s [%s]."
+                    % (deviceid, ip)
+                )
+                sw = False
+                return (sw, w, mA, V, "User Interrupt")
+
+        try:
+            if data:
                 dps = data["dps"]
                 sw = dps["1"]
                 if vers == "3.3" and ("19" in dps.keys()):
@@ -133,24 +161,19 @@ def deviceInfo(deviceid, ip, key, vers):
                 sw = False
                 key = "Incomplete response"
             return (sw, w, mA, V, key)
-        except KeyboardInterrupt:
-            log.info(
-                "CANCEL: Received interrupt from user while polling plug %s [%s]."
-                % (deviceid, ip)
-            )
-            sw = False
-            return (sw, w, mA, V, "User Interrupt")
+
         except:
+            # Unable to extract data points - try again
             watchdog += 1
             if watchdog > RETRY:
                 log.info(
-                    "TIMEOUT: No response from plug %s [%s] after %s attempts."
-                    % (deviceid, ip, RETRY)
+                    "NO POWER DATA: Response from plug %s [%s] missing power data."
+                    % (deviceid, ip)
                 )
-                sw = False
-                return (sw, w, mA, V, "Timeout polling device")
+                return (sw, w, mA, V, "Missing Power Data")
             try:
                 sleep(2)
+                continue
             except KeyboardInterrupt:
                 log.info(
                     "CANCEL: Received interrupt from user while polling plug %s [%s]."
@@ -158,6 +181,58 @@ def deviceInfo(deviceid, ip, key, vers):
                 )
                 sw = False
                 return (sw, w, mA, V, "User Interrupt")
+
+# (dps) = tuyapower.deviceInfo(id, ip, key, vers)
+def deviceRaw(deviceid, ip, key, vers):
+    """Poll Device for Status - raw DPS response
+       (dps) = tuyapower.deviceInfo(id, ip, key, vers)
+
+    Parameters :
+        id = Device ID e.g. 01234567891234567890
+        ip = Device IP Address e.g. 10.0.1.99
+        key = Device Key e.g. 0123456789abcdef
+        vers = Version of Protocol 3.1 or 3.3
+
+    Response :
+        dps = raw dps response
+    """
+    watchdog = 0
+    while True:
+        data = False
+        try:
+            if(api == "tinytuya"):
+                d = tinytuya.OutletDevice(deviceid, ip, key)
+            else:
+                d = pytuya.OutletDevice(deviceid, ip, key)
+
+            if vers == "3.3":
+                d.set_version(3.3)
+            data = d.status()
+
+        except KeyboardInterrupt:
+            log.info(
+                "CANCEL: Received interrupt from user while polling plug %s [%s]."
+                % (deviceid, ip)
+            )
+
+        except:
+            watchdog += 1
+            if watchdog > RETRY:
+                log.info(
+                    "TIMEOUT: No response from plug %s [%s] after %s attempts."
+                    % (deviceid, ip, RETRY)
+                )
+            try:
+                sleep(2)
+                continue
+
+            except KeyboardInterrupt:
+                log.info(
+                    "CANCEL: Received interrupt from user while polling plug %s [%s]."
+                    % (deviceid, ip)
+                )
+
+        return(data)
 
 
 # Print output
