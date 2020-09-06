@@ -59,6 +59,10 @@ For a helpful video walk-through of getting the KEYS you can also watch this gre
     ```python
     (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
     ```
+* deviceRaw - Poll device and return raw response data.
+    ```python
+    rawData = tuyapower.deviceRaw(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
+    ```
 * devicePrint - Poll device and print formatted output to stdout.
     ```python
     tuyapower.devicePrint(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
@@ -90,6 +94,7 @@ For a helpful video walk-through of getting the KEYS you can also watch this gre
 * mA = milliamps 
 * V = Voltage 
 * err = Error message or OK
+* rawData = Raw response from device
 * devices = Dictionary of all devices found with power data if available
 
 Note: If error occurs, on will be set to false, w, mA and V will be set to -99.0.

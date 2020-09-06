@@ -8,6 +8,7 @@
 
  Functions and Usage
    (on, w, mA, V, err) = tuyapower.deviceInfo(id, ip, key, vers)
+   rawData = tuyapower.deviceRaw(id, ip, key, vers)
    tuyapower.devicePrint(id, ip, key, vers)
    dataJSON = tuyapower.deviceJSON(id, ip, key, vers)
    devices = deviceScan(verbose, port)
@@ -27,6 +28,7 @@
    mA = milliamps
    V = Voltage (-99 if error or not supported)
    err = Error message or OK
+   rawData = Raw response from device
    devices = Dictionary of all devices found with power data if available
 """
 from __future__ import print_function   # python 2.7 support
@@ -185,7 +187,7 @@ def deviceInfo(deviceid, ip, key, vers):
 # (dps) = tuyapower.deviceInfo(id, ip, key, vers)
 def deviceRaw(deviceid, ip, key, vers):
     """Poll Device for Status - raw DPS response
-       (dps) = tuyapower.deviceInfo(id, ip, key, vers)
+       rawData = tuyapower.deviceRaw(id, ip, key, vers)
 
     Parameters :
         id = Device ID e.g. 01234567891234567890
@@ -194,7 +196,7 @@ def deviceRaw(deviceid, ip, key, vers):
         vers = Version of Protocol 3.1 or 3.3
 
     Response :
-        dps = raw dps response
+        rawData = Data response from device
     """
     watchdog = 0
     while True:
