@@ -36,7 +36,9 @@ PLUGVERS = os.getenv("PLUGVERS", DEVICEVERS)
 now = datetime.datetime.utcnow()
 iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-# Poll Smart Swich for Power Data
+# Poll Smart Device for Raw  Data
+(raw) = tuyapower.deviceRaw(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
+# Poll Smart Switch for Power Data
 (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
 
 # Check for error
@@ -51,6 +53,7 @@ month = (week * 52.0) / 12.0
 # Print Output
 print("TuyaPower (Tuya Power Stats) [%s] %s [%s]"%(tuyapower.__version__,tuyapower.api,tuyapower.api_ver))
 print("\nDevice %s at %s key %s protocol %s:" % (PLUGID,PLUGIP,PLUGKEY,PLUGVERS))
+print("    Response Data: %s" % raw)
 print("    Switch On: %r" % on)
 print("    Power (W): %f" % w)
 print("    Current (mA): %f" % mA)
