@@ -102,14 +102,14 @@ def deviceInfo(deviceid, ip, key, vers):
 
     while True:
         sw, w, mA, V = _DEFAULTS
-        try:
-            if(api == "tinytuya"):
-                d = tinytuya.OutletDevice(deviceid, ip, key)
-            else:
-                d = pytuya.OutletDevice(deviceid, ip, key)
+        if(api == "tinytuya"):
+            d = tinytuya.OutletDevice(deviceid, ip, key)
+        else:
+            d = pytuya.OutletDevice(deviceid, ip, key)
+        if vers == "3.3":
+            d.set_version(3.3)
 
-            if vers == "3.3":
-                d.set_version(3.3)
+        try:
             data = d.status()
 
         except KeyboardInterrupt:
@@ -129,6 +129,7 @@ def deviceInfo(deviceid, ip, key, vers):
                 return (sw, w, mA, V, "Timeout polling device")
             try:
                 sleep(2)
+                continue
             except KeyboardInterrupt:
                 log.info(
                     "CANCEL: Received interrupt from user while polling plug %s [%s]."
@@ -197,14 +198,15 @@ def deviceRaw(deviceid, ip, key, vers):
     watchdog = 0
     while True:
         data = False
-        try:
-            if(api == "tinytuya"):
-                d = tinytuya.OutletDevice(deviceid, ip, key)
-            else:
-                d = pytuya.OutletDevice(deviceid, ip, key)
+        if(api == "tinytuya"):
+            d = tinytuya.OutletDevice(deviceid, ip, key)
+        else:
+            d = pytuya.OutletDevice(deviceid, ip, key)
 
-            if vers == "3.3":
-                d.set_version(3.3)
+        if vers == "3.3":
+            d.set_version(3.3)
+
+        try:
             data = d.status()
 
         except KeyboardInterrupt:
@@ -220,10 +222,10 @@ def deviceRaw(deviceid, ip, key, vers):
                     "TIMEOUT: No response from plug %s [%s] after %s attempts."
                     % (deviceid, ip, RETRY)
                 )
+                return ("ERROR: Timeout polling device")
             try:
                 sleep(2)
                 continue
-
             except KeyboardInterrupt:
                 log.info(
                     "CANCEL: Received interrupt from user while polling plug %s [%s]."
