@@ -54,7 +54,7 @@ except ImportError:
         api_ver = "unknown"
 
 name = "tuyapower"
-version_tuple = (0, 0, 24)
+version_tuple = (0, 0, 25)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -68,7 +68,7 @@ log.info("Using %s version %r", api, api_ver)
 RETRY = 5
 
 # default polling response for error condition
-_DEFAULTS = (-99, -99, -99)  # w, mA, V
+_DEFAULTS = (False, -99, -99, -99)  # w, mA, V
 
 # UDP packet payload decryption - credit to tuya-convert 
 pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
@@ -99,8 +99,9 @@ def deviceInfo(deviceid, ip, key, vers):
     watchdog = 0
     now = datetime.datetime.utcnow()
     iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
+
     while True:
-        w, mA, V = _DEFAULTS
+        sw, w, mA, V = _DEFAULTS
         try:
             if(api == "tinytuya"):
                 d = tinytuya.OutletDevice(deviceid, ip, key)
@@ -116,7 +117,6 @@ def deviceInfo(deviceid, ip, key, vers):
                 "CANCEL: Received interrupt from user while polling plug %s [%s]."
                 % (deviceid, ip)
             )
-            sw = False
             return (sw, w, mA, V, "User Interrupt")
 
         except:
@@ -126,7 +126,6 @@ def deviceInfo(deviceid, ip, key, vers):
                     "TIMEOUT: No response from plug %s [%s] after %s attempts."
                     % (deviceid, ip, RETRY)
                 )
-                sw = False
                 return (sw, w, mA, V, "Timeout polling device")
             try:
                 sleep(2)
@@ -135,7 +134,6 @@ def deviceInfo(deviceid, ip, key, vers):
                     "CANCEL: Received interrupt from user while polling plug %s [%s]."
                     % (deviceid, ip)
                 )
-                sw = False
                 return (sw, w, mA, V, "User Interrupt")
 
         try:
@@ -160,7 +158,6 @@ def deviceInfo(deviceid, ip, key, vers):
                 log.info(str(info))
             else:
                 log.info("Incomplete response from plug %s [%s]." % (deviceid,ip))
-                sw = False
                 key = "Incomplete response"
             return (sw, w, mA, V, key)
 
@@ -181,7 +178,6 @@ def deviceInfo(deviceid, ip, key, vers):
                     "CANCEL: Received interrupt from user while polling plug %s [%s]."
                     % (deviceid, ip)
                 )
-                sw = False
                 return (sw, w, mA, V, "User Interrupt")
 
 # (dps) = tuyapower.deviceInfo(id, ip, key, vers)
