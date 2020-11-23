@@ -41,10 +41,6 @@ iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 # Poll Smart Switch for Power Data
 (on, w, mA, V, err) = tuyapower.deviceInfo(PLUGID, PLUGIP, PLUGKEY, PLUGVERS)
 
-# Check for error
-if err != "OK":
-    print(" ERROR: %s\n" % err)
-
 # Compute projected kWh
 day = (w / 1000.0) * 24
 week = 7.0 * day
@@ -54,11 +50,18 @@ month = (week * 52.0) / 12.0
 print("TuyaPower (Tuya Power Stats) [%s] %s [%s]"%(tuyapower.__version__,tuyapower.api,tuyapower.api_ver))
 print("\nDevice %s at %s key %s protocol %s:" % (PLUGID,PLUGIP,PLUGKEY,PLUGVERS))
 print("    Response Data: %s" % raw)
-print("    Switch On: %r" % on)
-print("    Power (W): %f" % w)
-print("    Current (mA): %f" % mA)
-print("    Voltage (V): %f" % V)
-print("    Projected usage (kWh):  Day: %f Week: %f  Month: %f" % (day,week,month))
+if isinstance(on,dict):
+    print("    Switches (%d) On: %s" % (len(on),on))
+else:
+    print("    Switch On: %r" % on)
+if err == "OK":
+    print("    Power (W): %f" % w)
+    print("    Current (mA): %f" % mA)
+    print("    Voltage (V): %f" % V)
+    print("    Projected usage (kWh):  Day: %f Week: %f  Month: %f" % (day,week,month))
+else:
+    print("    NOTE: %s" % err)
+
 print(
     '\n{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
     % (iso_time, on, w, mA, V)
