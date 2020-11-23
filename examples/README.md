@@ -22,13 +22,14 @@ demjson module to read the dirty JSON so that you can simply copy and paste the 
 python3 example.py
 
 Loading Tuya Keys...
-    3 device keys loaded
+    4 device keys loaded
 
 Scanning network for Tuya devices...
     14 devices found
 
 Polling devices...
-    [Smart Plug] - Off - Power: 0.0W, 0.0mA, 118.6V
-    [Fan] - On
-    [Fridge] - On - Power: 53.4W, 475.0mA, 120.1V
+    [Smart Plug - 10.0.1.100] - Off - Power: 0.0W, 0.0mA, 118.6V
+    [Fan - 10.0.1.101] - On
+    [Fridge - 10.0.1.102] - On - Power: 53.4W, 475.0mA, 120.1V
+    [Powerstrip - 10.0.1.103] - 4 Switches: 1:On 2:Off 3:Off 4:Off 
 ```

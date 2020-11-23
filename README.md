@@ -92,15 +92,16 @@ For a helpful video walk-through of getting the KEYS you can also watch this gre
 
 ### Response Data:
 
-* on = Switch state - true or false
+* on = Switch state (single) - true or false 
+* on = Switch state (multiswitch) - dictionary of state for each switch e.g. {'1':True, '2':False}
 * w = Wattage 
 * mA = milliamps 
 * V = Voltage 
-* err = Error message or OK
+* err = Error message or OK (power data found)
 * rawData = Raw response from device
 * devices = Dictionary of all devices found with power data if available
 
-Note: If error occurs, on will be set to false, w, mA and V will be set to -99.0.
+Note: If error occurs, on will be set to false, w, mA and V will be set to 0.
 
 ### Programming Examples
 

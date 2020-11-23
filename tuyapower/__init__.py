@@ -23,11 +23,12 @@
    port = UDP port to scan (default 6666)
 
  Response Data:
-   on = Switch state - true or false
-   w = Wattage
-   mA = milliamps
-   V = Voltage (-99 if error or not supported)
-   err = Error message or OK
+   on = Switch state (single) - true or false 
+   on = Switch state (multiswitch) - dictionary of state for each switch e.g. {'1':True, '2':False}
+   w = Wattage (0 if error or not supported)
+   mA = milliampere (0 if error or not supported)
+   V = Voltage (0 if error or not supported)
+   err = Error message or OK (power data found)
    rawData = Raw response from device
    devices = Dictionary of all devices found with power data if available
 """
@@ -54,7 +55,7 @@ except ImportError:
         api_ver = "unknown"
 
 name = "tuyapower"
-version_tuple = (0, 0, 25)
+version_tuple = (0, 1, 0)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -68,7 +69,7 @@ log.info("Using %s version %r", api, api_ver)
 RETRY = 5
 
 # default polling response for error condition
-_DEFAULTS = (False, -99, -99, -99)  # w, mA, V
+_DEFAULTS = (False, 0, 0, 0)  # w, mA, V
 
 # UDP packet payload decryption - credit to tuya-convert 
 pad = lambda s: s + (16 - len(s) % 16) * chr(16 - len(s) % 16)
@@ -93,8 +94,8 @@ def deviceInfo(deviceid, ip, key, vers):
         on = Switch state - true or false
         w = Wattage
         mA = milliamps
-        V = Voltage (-99 if error or not supported)
-        err = Error message or OK
+        V = Voltage 
+        err = Error message or OK (power data found)
     """
     watchdog = 0
     now = datetime.datetime.utcnow()
@@ -141,11 +142,22 @@ def deviceInfo(deviceid, ip, key, vers):
             if data:
                 dps = data["dps"]
                 sw = dps["1"]
-                if vers == "3.3" and ("19" in dps.keys()):
+                # Check to see if this is a multiswitch Tuya device
+                # assuming DP 2 (switch-2) and 10 (countdown-2) = multiswitch
+                if "10" in dps.keys() and "2" in dps.keys():
+                    # return a dictionary with all switch states
+                    swDict = {}
+                    for e in ["1","2","3","4","5","6","7"]:
+                        if e in dps.keys():
+                            swDict[e] = dps[e]
+                    sw = swDict
+                # Check for power data - DP 19 on some 3.1/3.3 devices
+                if "19" in dps.keys():
                     w = float(dps["19"]) / 10.0
                     mA = float(dps["18"])
                     V = float(dps["20"]) / 10.0
                     key = "OK"
+                # Check for power data - DP 5 for some 3.1 devices
                 elif "5" in dps.keys():
                     w = float(dps["5"]) / 10.0
                     mA = float(dps["4"])
@@ -259,17 +271,20 @@ def devicePrint(deviceid, ip, key='0123456789abcdef', vers='3.1'):
     week = 7.0 * day
     month = (week * 52.0) / 12.0
 
-    # Print Output
-    print("TuyaPower (Tuya Power Stats) [%s] %s"%(version,api))
+    # Print Output 
+    print("TuyaPower (Tuya Power Stats) [%s] %s [%s]"%(__version__, api, api_ver))
     print("\nDevice %s at %s key %s protocol %s:" % (deviceid,ip,key,vers))
-    print("    Switch On: %r" % on)
-    print("    Power (W): %f" % w)
-    print("    Current (mA): %f" % mA)
-    print("    Voltage (V): %f" % V)
-    print(
-        "    Projected usage (kWh):  Day: %f  Week: %f  Month: %f\n"
-        % (day, week, month)
-    )
+    if isinstance(on,dict):
+        print("    Switches (%d) On: %s" % (len(on),on)) 
+    else:
+        print("    Switch On: %r" % on)
+    if err == "OK":
+        print("    Power (W): %f" % w)
+        print("    Current (mA): %f" % mA)
+        print("    Voltage (V): %f" % V)
+        print("    Projected usage (kWh):  Day: %f Week: %f  Month: %f" % (day,week,month))
+    else:
+        print("    NOTE: %s" % err)
 
 # JSON response
 def deviceJSON(deviceid, ip, key='0123456789abcdef', vers='3.1'):
@@ -434,10 +449,10 @@ def deviceScan(verbose = False,maxretry = MAXCOUNT):
                     # Version 3.1 - no device key requires - poll for status
                     (on, w, mA, V, err) = deviceInfo(gwId, ip, productKey, version)
                     if(verbose):
-                        if(w == -99):
-                            print("    Stats: on=%s [%s]"%(on,err))
-                        else:    
+                        if(err == 'OK'):
                             print("    Stats: on=%s, W=%s, mA=%s, V=%s [%s]"%(on,w,mA,V,err))
+                        else:    
+                            print("    Stats: on=%s [%s]"%(on,err))
                     devices[ip]['on'] = on
                     devices[ip]['w'] = w
                     devices[ip]['mA'] = mA

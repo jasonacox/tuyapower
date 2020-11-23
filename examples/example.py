@@ -54,15 +54,22 @@ for i in data:
         name = i['name'] 
         (ip,ver) = getIP(devices, i['id'])
         if (ip == 0):
-            print ("    %s[%s]%s - %sError: No IP found%s"%(subbold,name,dim,alert,normal))
+            print ('%s[%s]%s - %sError - No IP found%s'%(bold,name,dim,alert,normal))
         else:
             (on, w, mA, V, err) = tuyapower.deviceInfo(i['id'], ip, i['key'], ver)
             state = alertdim + "Off" + dim
-            if(on):
+            if isinstance(on,dict):
+                state = dim + "%d Switches: " % len(on)
+                for e in on:
+                    if(on[e] == True):
+                        state = state + dim + e + ":" + subbold + "On " + dim
+                    else:
+                        state = state + dim + e + ":" + alertdim + "Off " + dim
+            elif (on):
                 state = subbold + "On" + dim
-            if(w >= 0):
-                print("    %s[%s]%s - %s - Power: %sW, %smA, %sV"%(subbold,name,dim,state,w,mA,V))
+            if(err == "OK"):
+                print("%s[%s - %s]%s - %s - Power: %sW, %smA, %sV"%(bold,name,ip,dim,state,w,mA,V))
             else:
-                print("    %s[%s]%s - %s"%(subbold,name,dim,state))
+                print("%s[%s - %s]%s - %s"%(bold,name,ip,dim,state))
 
 print()
