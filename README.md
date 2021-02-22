@@ -26,7 +26,7 @@ TuyaPower has been updated to use `tinytuya`, a fork of `pytuya` that adds suppo
 
 ## Tuya Device Preparation
 
-Pulling data from Tuya devices on your network requires that you have the Device *IP*, *ID*, *VERSION* and *KEY* (for 3.3 devices). The `tuyapower` module includes a scanner function to find Smart Plugs on your network.  This will scan the network and identify Device's *IP*, *ID* and *VERSION*.  It will not be able to get the local *KEY*.  Since newer 3.3 devices will require the *KEY*, the following steps will help you determine the *KEY*s for your devices:
+Pulling data from Tuya devices on your network requires that you have the Device *IP*, *ID*, *VERSION* and *KEY* (for 3.3 devices). The `tuyapower` and `tinytuya` modules include a scanner function to find Smart Plugs on your network.  This will scan the network and identify Device's *IP*, *ID* and *VERSION*.  It will not be able to get the local *KEY*.  Since newer 3.3 devices will require the *KEY*, the following steps will help you determine the *KEY*s for your devices:
 
 ### Get the Tuya Device KEY
 
@@ -39,20 +39,29 @@ Pulling data from Tuya devices on your network requires that you have the Device
     ```
 3. For Device KEY: If your device is running the latest protocol version 3.3 (often seen with Firmware 1.0.5 or above), you will need to obtain the Device Key. This is used to connect with the device and decrypt the response data. The following are instructions to do this and are based on <https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md>:
 
-    * **From iot.tuya.com**
+  * **From iot.tuya.com**
     * Create a Tuya developer account on [iot.tuya.com](https://iot.tuya.com/) and log in.
     * Go to Cloud Development -> Create a project  (note the Authorization Key: *ID* & *Secret* for below)
     * Go to Cloud Development -> select your project -> Project Overview -> Linked Device -> Link devices by App Account (tab)
     * Click 'Add App Account' and it will display a QR code. Scan the QR code with the *Smart Life app* on your Phone (see step 1 above) by going to the "Me" tab in the *Smart Life app* and clicking on the QR code button [..] in the upper right hand corner of the app. When you scan the QR code, it will link all of the devices registered in your *Smart Life app* into your Tuya IoT project.
     * Verify under Cloud Development -> select your project -> API Setting that the following API groups have status "Open": Authorization management, Device Management and Device Control ([see here](https://user-images.githubusercontent.com/5875512/92361673-15864000-f132-11ea-9a01-9c715116456f.png))
-    * **From your Local Workstation**
-    * From your PC/Mac run this to install the Tuya CLI: `npm i @tuyapi/cli -g`
-    * Next run: `tuya-cli wizard` and it will prompt you for the API *ID* key and *Secret* from your Tuya IoT project we noted above.  The Virtual ID is the Device ID from step 2 above or in the Device List on your Tuya IoT project.
-    * The wizard will take a while but eventually print a JSON looking output that contains the name, id and key of the registered device(s).  This is the KEY (PLUGKEY) you will use to poll your device.
+  * **From your Local Workstation**
+    * From your PC/Mac you can run the TinyTuya Setup **Wizard** to fetch the Device KEYs for all of your
+    registered devices:
+    ```
+    python3 -m tinytuya wizard
 
-Note: If you reset or re-pair your smart devices, they will reset their local KEY and you will need to repeat these steps above.
+    # If you are using windows command prompt w/o color use:
+    python -m tinytuya wizard -nocolor
+    ```
+    * The **Wizard** will prompt you for the *API ID* key, API *Secret*, API *Region* (us, eu, cn or in) from your Tuya IoT project noted above.  It will also ask for a sample *Device ID*.  Use one from step 2 above or found in the Device List on your Tuya IoT project.
+    * The **Wizard** will poll the Tuya IoT Platform and print a JSON list of all your registered devices with the "name", "id" and "key" of your registered device(s). The "key"s in this list are the Device *KEYs* you will use to poll your devices.
+    * In addition to displaying the list of devices, **Wizard** will create a local file `devices.json`.  TinyTuya will use this file to provide additional details to scan results from `tinytuya.scanDevices()` or when running `python3 -m tinytuya` to scan your local network.
 
-For a helpful video walk-through of getting the KEYS you can also watch this great _Tech With Eddie_ YouTube tutorial: <https://youtu.be/oq0JL_wicKg>.
+Notes:
+* If you ever reset or re-pair your smart devices, they will reset their *LOCAL_KEY* and you will need to repeat these steps above. 
+* The TinyTuya *Wizard* was inspired by the TuyAPI CLI which is an alternative way to fetch the *Device KEYs*: `npm i @tuyapi/cli -g` and run `tuya-cli wizard`
+* For a helpful video walk-through of getting the KEYS you can also watch this great _Tech With Eddie_ YouTube tutorial: <https://youtu.be/oq0JL_wicKg>.
 
 ## Programming with TuyaPower
 
