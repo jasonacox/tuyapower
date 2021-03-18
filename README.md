@@ -40,11 +40,16 @@ Pulling data from Tuya devices on your network requires that you have the Device
 3. For Device KEY: If your device is running the latest protocol version 3.3 (often seen with Firmware 1.0.5 or above), you will need to obtain the Device Key. This is used to connect with the device and decrypt the response data. The following are instructions to do this and are based on <https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md>:
 
   * **From iot.tuya.com**
-    * Create a Tuya developer account on [iot.tuya.com](https://iot.tuya.com/) and log in.
-    * Go to Cloud Development -> Create a project  (note the Authorization Key: *ID* & *Secret* for below)
-    * Go to Cloud Development -> select your project -> Project Overview -> Linked Device -> Link devices by App Account (tab)
-    * Click 'Add App Account' and it will display a QR code. Scan the QR code with the *Smart Life app* on your Phone (see step 1 above) by going to the "Me" tab in the *Smart Life app* and clicking on the QR code button [..] in the upper right hand corner of the app. When you scan the QR code, it will link all of the devices registered in your *Smart Life app* into your Tuya IoT project.
-    * Verify under Cloud Development -> select your project -> API Setting that the following API groups have status "Open": Authorization management, Device Management and Device Control ([see here](https://user-images.githubusercontent.com/5875512/92361673-15864000-f132-11ea-9a01-9c715116456f.png))
+    * Create a Tuya Developer account on [iot.tuya.com](https://iot.tuya.com/) and log in.
+    * Click on "Cloud" icon -> Create a project (remember the Authorization Key: *API ID* and *Secret* for below)
+    * Click on "Cloud" icon -> select your project -> Project Overview -> Linked Device -> Link devices by App Account (tab)
+    * Click 'Add App Account' and it will display a QR code. Scan the QR code with the *Smart Life app* on your Phone (see step 1 above) by going to the "Me" tab in the *Smart Life app* and clicking on the QR code button [..] in the upper right hand corner of the app. When you scan the QR code, it will link all of the devices registered in your "Smart Life" app into your Tuya IoT project.
+    * **IMPORTANT** Under "API Management" -> "API Products" and ensure the API groups have status "Subscribed": Smart Home Devices Management, Authorization and Smart Home Family Management ([see screenshot here](https://user-images.githubusercontent.com/836718/111419675-1d0d3f80-86a7-11eb-81ad-f6078ee391fe.png)) - Make sure you authorize your Project to use these 3 API groups:
+        - Click each of the API boxes
+        - Click "Projects" tab
+        - Click "**New Authorization**" button
+        - Select your Project from the dropdown and click OK ([see screenshot here](https://user-images.githubusercontent.com/836718/111578175-d5eb8100-8770-11eb-93b3-46342b1a67fa.png))
+
   * **From your Local Workstation**
     * From your PC/Mac you can run the TinyTuya Setup **Wizard** to fetch the Device KEYs for all of your
     registered devices:
