@@ -41,7 +41,7 @@ iso_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 # Print output json
 responsejson = (
-    '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s" }'
-    % (iso_time, on, w, mA, V)
+    '{ "datetime": "%s", "switch": "%s", "power": "%s", "current": "%s", "voltage": "%s", "error": "%s" }'
+    % (iso_time, on, w, mA, V, err)
 )
 print(responsejson)
