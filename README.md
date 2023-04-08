@@ -199,21 +199,29 @@ tuyapower.scan(50)
 devices = tuyapower.deviceScan(false, 50)
 ```
 
-## Docker Setup (Optional)
+## Docker Usage (Optional)
 
-_Tested on Linux and MacOS._
-Build a docker container using `Dockerfile`
+[Docker Pulls](https://img.shields.io/docker/pulls/jasonacox/tuyapower)
+
+A docker container version of the tuyapower library is available on DockerHub and can be used to grab power data without installing the python libraries.
+
 ```bash
-# build tuyapower container
-docker build -t tuyapower .
+# Friendly Output
+# Run tuyapower container - replace with device ID, IP and VERS
+docker run -e PLUGID="01234567891234567890" \
+    -e PLUGIP="10.0.1.x" \
+    -e PLUGKEY="0123456789abcdef" \
+    -e PLUGVERS="3.3" \
+    jasonacox/tuyapower
 
-# Devices with older firmware (1.0.4 and below)
-# run tuyapower container - replace with device ID and IP 
-docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" tuyapower
-
-# Devices with newer firmware (1.0.5 and above)
-# run tuyapower container - replace with device ID and IP 
-docker run -e PLUGID='01234567891234567890' -e PLUGIP="10.0.1.x" -e PLUGKEY="0123456789abcdef" -e PLUGVERS="3.3" tuyapower
+# JSON Output
+# Run tuyapower container - replace with device ID, IP and VERS
+docker run -e PLUGID="01234567891234567890" \
+    -e PLUGIP="10.0.1.x" \
+    -e PLUGKEY="0123456789abcdef" \
+    -e PLUGVERS="3.3" \
+    -e PLUGJSON="yes" \
+    jasonacox/tuyapower
 ```
 
 ## Example Products
