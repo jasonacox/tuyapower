@@ -33,7 +33,7 @@ Pulling data from Tuya devices on your network requires that you have the Device
 1. Download the "Smart Life" - Smart Living app for iPhone or Android. Pair with your smart plug (this is important as you cannot monitor a plug that has not been paired).  
     * https://itunes.apple.com/us/app/smart-life-smart-living/id1115101477?mt=8
     * https://play.google.com/store/apps/details?id=com.tuya.smartlife&hl=en
-2. For Device IP, ID and VERSION: Run the tuyapower scan to get a list of Tuya devices on your network along with their device IP, ID and VERSION number (3.1 or 3.3):
+2. For Device IP, ID and VERSION: Run the tuyapower scan to get a list of Tuya devices on your network along with their device IP, ID and VERSION number (3.1 to 3.5 - most are 3.3):
     ```bash
     python3 -m tuyapower
     ```
@@ -100,7 +100,7 @@ Notes:
 * PLUGID = Device ID e.g. 01234567891234567890
 * PLUGIP = Device IP Address e.g. 10.0.1.99
 * PLUGKEY = Device Key e.g. 0123456789abcdef
-* PLUGVERS = Version of Protocol 3.1 or 3.3
+* PLUGVERS = Version of Protocol 3.1, 3.2, 3.3, 3.4 or 3.5
 * verbose = Print more details - True or False (default is False)
 * max_retries = Number of times to retry scan of new devices (default is 15)
 

@@ -18,7 +18,7 @@
    id = Device ID e.g. 01234567891234567890
    ip = Device IP Address e.g. 10.0.1.99
    key = Device Key e.g. 0123456789abcdef
-   vers = Version of Protocol 3.1 or 3.3
+   vers = Version of Protocol 3.1, 3.2, 3.3, 3.4 and 3.5
    verbose = True or False (print output)
    port = UDP port to scan (default 6666)
 
@@ -55,7 +55,7 @@ except ImportError:
         api_ver = "unknown"
 
 name = "tuyapower"
-version_tuple = (0, 1, 0)
+version_tuple = (0, 2, 0)
 version = version_string = __version__ = "%d.%d.%d" % version_tuple
 __author__ = "jasonacox"
 
@@ -88,7 +88,7 @@ def deviceInfo(deviceid, ip, key, vers):
         id = Device ID e.g. 01234567891234567890
         ip = Device IP Address e.g. 10.0.1.99
         key = Device Key e.g. 0123456789abcdef
-        vers = Version of Protocol 3.1 or 3.3
+        vers = Version of Protocol 3.1, 3.2, 3.3, 3.4 and 3.5
 
     Response :
         on = Switch state - true or false
@@ -107,8 +107,9 @@ def deviceInfo(deviceid, ip, key, vers):
             d = tinytuya.OutletDevice(deviceid, ip, key)
         else:
             d = pytuya.OutletDevice(deviceid, ip, key)
-        if vers == "3.3":
-            d.set_version(3.3)
+            if float(vers) > 3.3:
+                return (sw, w, mA, V, "Unsupported Version: Use tinytuya")
+        d.set_version(float(vers))
 
         try:
             data = d.status()
@@ -151,7 +152,7 @@ def deviceInfo(deviceid, ip, key, vers):
                         if e in dps.keys():
                             swDict[e] = dps[e]
                     sw = swDict
-                # Check for power data - DP 19 on some 3.1/3.3 devices
+                # Check for power data - DP 19 on some devices
                 if "19" in dps.keys():
                     w = float(dps["19"]) / 10.0
                     mA = float(dps["18"])
@@ -202,7 +203,7 @@ def deviceRaw(deviceid, ip, key, vers):
         id = Device ID e.g. 01234567891234567890
         ip = Device IP Address e.g. 10.0.1.99
         key = Device Key e.g. 0123456789abcdef
-        vers = Version of Protocol 3.1 or 3.3
+        vers = Version of Protocol 3.1, 3.2, 3.3, 3.4 and 3.5
 
     Response :
         rawData = Data response from device
@@ -214,9 +215,10 @@ def deviceRaw(deviceid, ip, key, vers):
             d = tinytuya.OutletDevice(deviceid, ip, key)
         else:
             d = pytuya.OutletDevice(deviceid, ip, key)
+            if float(vers) > 3.3:
+                return ("ERROR: Unsupported Version: Use tinytuya")
 
-        if vers == "3.3":
-            d.set_version(3.3)
+        d.set_version(float(vers))
 
         try:
             data = d.status()
@@ -256,7 +258,7 @@ def devicePrint(deviceid, ip, key='0123456789abcdef', vers='3.1'):
         id = Device ID e.g. 01234567891234567890
         ip = Device IP Address e.g. 10.0.1.99
         key = Device Key e.g. 0123456789abcdef
-        vers = Version of Protocol 3.1 or 3.3
+        vers = Version of Protocol 3.1, 3.2, 3.3, 3.4 and 3.5
 
     """
     # Poll Smart Switch for Power Data
@@ -295,7 +297,7 @@ def deviceJSON(deviceid, ip, key='0123456789abcdef', vers='3.1'):
         id = Device ID e.g. 01234567891234567890
         ip = Device IP Address e.g. 10.0.1.99
         key = Device Key e.g. 0123456789abcdef
-        vers = Version of Protocol 3.1 or 3.3
+        vers = Version of Protocol 3.1, 3.2, 3.3, 3.4 and 3.5
 
     Response:
         JSON String
@@ -319,7 +321,7 @@ def deviceJSON(deviceid, ip, key='0123456789abcdef', vers='3.1'):
 MAXCOUNT = 15       # How many tries before stopping
 DEBUG = False       # Additional details beyond verbose
 UDPPORT = 6666      # Tuya 3.1 UDP Port
-UDPPORTS = 6667     # Tuya 3.3 encrypted UDP Port
+UDPPORTS = 6667     # Tuya 3.3+ encrypted UDP Port
 TIMEOUT = 3.0       # Seconds to wait for a broadcast
 
 # Return positive number or zero
@@ -374,7 +376,7 @@ def deviceScan(verbose = False,maxretry = MAXCOUNT):
     client.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     client.bind(("", UDPPORT))
     client.settimeout(TIMEOUT) 
-    # Enable UDP lisenting broadcasting mode on encrypted UDP port 6667 - 3.3 Devices
+    # Enable UDP lisenting broadcasting mode on encrypted UDP port 6667 - 3.3+ Devices
     clients = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP) 
     clients.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     clients.bind(("", UDPPORTS))
