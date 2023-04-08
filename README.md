@@ -201,7 +201,7 @@ devices = tuyapower.deviceScan(false, 50)
 
 ## Docker Usage (Optional)
 
-[Docker Pulls](https://img.shields.io/docker/pulls/jasonacox/tuyapower)
+![Docker Pulls](https://img.shields.io/docker/pulls/jasonacox/tuyapower)
 
 A docker container version of the tuyapower library is available on DockerHub and can be used to grab power data without installing the python libraries.
 
