@@ -53,7 +53,7 @@ python3 -m pip install tuyapower       # this tuyapower module
 * PLUGID = Device ID e.g. 01234567891234567890
 * PLUGIP = Device IP Address e.g. 10.0.1.99
 * PLUGKEY = Device Key e.g. 0123456789abcdef
-* PLUGVERS = Version of Protocol 3.1 or 3.3
+* PLUGVERS = Version of Protocol 3.1, 3.2, 3.3, 3.4 or 3.5
 * verbose = Print more details - True or False (default is False)
 * max_retries = Number of times to retry scan of new devices (default is 15)
  
