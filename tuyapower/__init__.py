@@ -139,6 +139,14 @@ def deviceInfo(deviceid, ip, key, vers):
                 )
                 return (sw, w, mA, V, "User Interrupt")
 
+        # tinytuya reports failures (e.g. device unreachable) by returning an
+        # error dict rather than raising; it has already retried internally.
+        if isinstance(data, dict) and "Error" in data and "dps" not in data:
+            log.info(
+                "ERROR: Device %s [%s] returned: %s" % (deviceid, ip, data["Error"])
+            )
+            return (sw, w, mA, V, str(data["Error"]))
+
         try:
             if data:
                 dps = data["dps"]
