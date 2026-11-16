@@ -164,6 +164,15 @@ def deviceInfo(deviceid, ip, key, vers):
                     mA = float(dps["4"])
                     V = float(dps["6"]) / 10.0
                     key = "OK"
+                # Check for power data - DP 22 on some newer devices
+                # DP 21 = current (mA)
+                # DP 22 = power (W * 10)
+                # DP 23 = voltage (V * 10)
+                elif "21" in dps.keys() and "22" in dps.keys() and "23" in dps.keys():
+                    w = float(dps["22"]) / 10.0
+                    mA = float(dps["21"])
+                    V = float(dps["23"]) / 10.0
+                    key = "OK"
                 else:
                     key = "Power data unavailable"
                 info = dict(
